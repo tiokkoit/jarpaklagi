@@ -23,5 +23,8 @@ class Product extends Model
     {
         return $this->hasMany(ProductPackage::class);
     }
-    
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
 }
