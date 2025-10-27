@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\StockMovements\Pages;
 
 use App\Filament\Resources\StockMovements\StockMovementResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditStockMovement extends EditRecord
+class ViewStockMovement extends ViewRecord
 {
     protected static string $resource = StockMovementResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            // No edit/delete buttons (read-only)
         ];
     }
 }

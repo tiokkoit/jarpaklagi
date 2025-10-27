@@ -46,4 +46,43 @@ class StockMovement extends Model
     {
         return $this->morphTo();
     }
+
+    public function getTypeTextAttribute(): string
+{
+    return $this->type === 'in' ? 'IN' : 'OUT';
+}
+
+/**
+ * Get formatted reason
+ */
+public function getReasonTextAttribute(): string
+{
+    $reasons = [
+        // IN
+        'restock' => 'Restock',
+        'return_from_order' => 'Return Order',
+        'return_from_damage' => 'Return Damage',
+        'adjustment_in' => 'Adjustment In',
+        'initial_stock' => 'Initial Stock',
+        
+        // OUT
+        'order' => 'Order Out',
+        'damaged' => 'Damaged',
+        'expired' => 'Expired',
+        'lost' => 'Lost',
+        'sample' => 'Sample',
+        'adjustment_out' => 'Adjustment Out',
+    ];
+
+    return $reasons[$this->reason] ?? $this->reason;
+}
+
+/**
+ * Get formatted quantity with +/- sign
+ */
+public function getFormattedQuantityAttribute(): string
+{
+    $sign = $this->type === 'in' ? '+' : '-';
+    return $sign . number_format($this->quantity);
+}
 }
