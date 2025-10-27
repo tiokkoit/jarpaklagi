@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductPackages\Pages;
 
 use App\Filament\Resources\ProductPackages\ProductPackageResource;
+use App\Models\Product;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -13,27 +14,31 @@ class EditProductPackage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus Paket')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Hapus Paket Produk')
+                ->modalSubheading('Tindakan ini tidak dapat dibatalkan. Yakin ingin menghapus paket ini?')
+                ->modalButton('Ya, Hapus'),
         ];
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Split name dan code saat edit
-        if (isset($data['name']) && isset($data['product_id'])) {
-            $product = \App\Models\Product::find($data['product_id']);
+        if (isset($data['name'], $data['product_id'])) {
+            $product = Product::find($data['product_id']);
+
             if ($product) {
-                // Buang prefix dari name
+                // Hapus prefix nama & kode
                 $data['name_suffix'] = str_replace($product->name . ' ', '', $data['name']);
-                
-                // Buang prefix dari code
                 $data['code_suffix'] = str_replace($product->code . '-', '', $data['code']);
             }
         }
-        
-        // PENTING: Tambahin ID untuk validasi
+
+        // Tambahkan ID untuk validasi (agar update tidak dianggap duplikat)
         $data['id'] = $data['id'] ?? $this->record->id;
-        
+
         return $data;
     }
 }
