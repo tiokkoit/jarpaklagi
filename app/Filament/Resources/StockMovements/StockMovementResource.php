@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\StockMovements;
 
+use App\Filament\Resources\StockMovements\Pages\CreateStockMovement;
+use App\Filament\Resources\StockMovements\Pages\EditStockMovement;
 use App\Filament\Resources\StockMovements\Pages\ListStockMovements;
 use App\Filament\Resources\StockMovements\Pages\ViewStockMovement;
 use App\Filament\Resources\StockMovements\Schemas\StockMovementForm;
@@ -15,29 +17,26 @@ use BackedEnum;
 class StockMovementResource extends Resource
 {
     protected static ?string $model = StockMovement::class;
-
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
-
     protected static ?string $navigationLabel = 'Stock Movements';
-
     #protected static ?string $navigationGroup = 'Inventory';
-
     protected static ?int $navigationSort = 2;
 
-    // VIEW ONLY! Disable create/edit
     public static function canCreate(): bool
     {
-        return false;
+        return true; // ✅ Boleh create manual
     }
 
     public static function canEdit($record): bool
     {
-        return false;
+        // ✅ Hanya boleh edit jika berasal dari input manual
+        return $record?->reference_type === null;
     }
 
     public static function canDelete($record): bool
     {
-        return false;
+        // 🚫 Tidak boleh hapus data sistem
+        return $record?->reference_type === null;
     }
 
     public static function canDeleteAny(): bool
@@ -59,7 +58,9 @@ class StockMovementResource extends Resource
     {
         return [
             'index' => ListStockMovements::route('/'),
+            'create' => CreateStockMovement::route('/create'),
             'view' => ViewStockMovement::route('/{record}'),
+            'edit' => EditStockMovement::route('/{record}/edit'),
         ];
     }
 }

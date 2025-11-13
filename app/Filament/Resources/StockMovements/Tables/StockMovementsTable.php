@@ -14,11 +14,6 @@ class StockMovementsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('#')
-                    ->sortable()
-                    ->size('sm'),
-
                 TextColumn::make('product.name')
                     ->label('Product')
                     ->searchable()

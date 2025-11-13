@@ -13,11 +13,15 @@ class ListStockMovements extends ListRecords
     protected static string $resource = StockMovementResource::class;
 
     protected function getHeaderActions(): array
-    {
-        return [
-            // No create button (read-only)
-        ];
-    }
+{
+    return [
+        \Filament\Actions\CreateAction::make()
+            ->label('Add Stock Movement')
+            ->icon('heroicon-o-plus-circle')
+            ->color('success'),
+    ];
+}
+
 
     public function getTabs(): array
     {

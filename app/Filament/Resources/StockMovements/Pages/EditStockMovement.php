@@ -3,19 +3,19 @@
 namespace App\Filament\Resources\StockMovements\Pages;
 
 use App\Filament\Resources\StockMovements\StockMovementResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditStockMovement extends EditRecord
 {
     protected static string $resource = StockMovementResource::class;
 
-    protected function getHeaderActions(): array
+    protected function mutateFormDataBeforeSave(array $data): array
     {
-        return [
-            ViewAction::make(),
-            DeleteAction::make(),
-        ];
+        // Pastikan manual record aja yang bisa diubah
+        if ($this->record->reference_type) {
+            abort(403, 'Tidak dapat mengedit movement dari sistem.');
+        }
+
+        return $data;
     }
 }
