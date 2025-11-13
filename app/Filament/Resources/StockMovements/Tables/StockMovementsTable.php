@@ -103,13 +103,6 @@ class StockMovementsTable
                     ->size('sm'),
             ])
             ->filters([
-                SelectFilter::make('type')
-                    ->label('Type')
-                    ->options([
-                        'in' => 'Stock In',
-                        'out' => 'Stock Out',
-                    ]),
-
                 SelectFilter::make('reason')
                     ->label('Reason')
                     ->options([

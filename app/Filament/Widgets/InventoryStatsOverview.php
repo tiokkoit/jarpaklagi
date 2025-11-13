@@ -23,7 +23,7 @@ class InventoryStatsOverview extends BaseWidget
             Stat::make('Total Produk Unik', Product::count())
                 ->description('Jumlah SKU produk yang terdaftar')
                 ->color('primary')
-                ->icon('heroicon-o-archive-box'),
+                ->icon('heroicon-o-gift'),
             
             Stat::make('Total Stok Barang', number_format($totalStock))
                 ->description('Total unit barang tersedia di semua produk')
@@ -38,7 +38,7 @@ class InventoryStatsOverview extends BaseWidget
             Stat::make('Paket Aktif', ProductPackage::where('is_active', true)->count())
                 ->description('Jumlah paket penjualan yang bisa digunakan')
                 ->color('warning')
-                ->icon('heroicon-o-cube'),
+                ->icon('heroicon-o-archive-box-arrow-down'),
         ];
     }
 }

@@ -27,4 +27,21 @@ class Product extends Model
     {
         return $this->hasMany(StockMovement::class);
     }
+
+    // ⭐ KODE PERBAIKAN DIMULAI DI SINI ⭐
+    protected static function booted()
+    {
+        // Event ini dipicu tepat sebelum operasi DELETE dijalankan
+        static::deleting(function ($product) {
+            
+            // Hapus semua data StockMovement yang memiliki product_id dari produk yang akan dihapus.
+            // Ini membersihkan "anak" sebelum menghapus "induk".
+            $product->stockMovements()->delete();
+            
+            // Catatan: Jika ada tabel lain (misalnya 'order_items') yang 
+            // memiliki foreign key restrict ke 'products', Anda juga harus 
+            // menambahkan baris untuk menghapus atau mengupdate data tersebut di sini.
+        });
+    }
+    // ⭐ KODE PERBAIKAN SELESAI ⭐
 }
