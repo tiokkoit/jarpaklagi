@@ -8,6 +8,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use App\Models\ProductPackage;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListOrders extends ListRecords
 {
@@ -70,7 +71,7 @@ class ListOrders extends ListRecords
                             $count++;
                         }
                         fclose($handle);
-                        $this->notify('success', "Import selesai: {$count} baris ditambahkan.");
+                        \Filament\Notifications\Notification::make()->success()->title("Import selesai: {$count} baris ditambahkan.")->send();
                     }
                 });
 
@@ -81,27 +82,61 @@ class ListOrders extends ListRecords
             ->icon('heroicon-o-plus')
             ->color('primary');
 
+        // build status tabs
+        $statusMap = [
+            'ALL' => ['label' => 'All', 'color' => 'secondary'],
+            'NEW' => ['label' => 'NEW', 'color' => 'primary'],
+            'DIKIRIM' => ['label' => 'DIKIRIM', 'color' => 'info'],
+            'CANCEL' => ['label' => 'CANCEL', 'color' => 'danger'],
+            'SELESAI' => ['label' => 'SELESAI', 'color' => 'success'],
+            'DIKEMBALIKAN' => ['label' => 'DIKEMBALIKAN', 'color' => 'warning'],
+        ];
+
+        // counts
+        $counts = Order::query()->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c','status')->toArray();
+        $total = Order::count();
+
+        $tabActions = [];
+        foreach ($statusMap as $key => $meta) {
+            $count = $key === 'ALL' ? $total : ($counts[$key] ?? 0);
+            $label = $meta['label'] . " ({$count})";
+
+            $url = $key === 'ALL' ? OrderResource::getUrl('index') : OrderResource::getUrl('index', ['status' => $key]);
+
+            $tabActions[] = Action::make('tab_' . $key)
+                ->label($label)
+                ->url($url)
+                ->color($meta['color'])
+                ->outlined();
+        }
+
+        // merge with parent actions
         $actions = parent::getHeaderActions();
 
-        // add create if not present
-        $hasCreate = false;
-        foreach ($actions as $a) {
-            try {
-                if (method_exists($a, 'getName') && $a->getName() === 'create') {
-                    $hasCreate = true;
-                    break;
-                }
-            } catch (\Throwable $e) {
-                // ignore
-            }
-        }
+        // ensure create exists
+        $hasCreate = collect($actions)->contains(function ($a) {
+            try { return method_exists($a, 'getName') && $a->getName() === 'create'; } catch (\Throwable $e) { return false; }
+        });
 
         if (! $hasCreate) {
             array_unshift($actions, $createAction);
         }
 
+        // put tabs first
+        $actions = array_merge($tabActions, $actions);
+
         $actions[] = $importAction;
 
         return $actions;
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        $query = Order::query();
+        $status = request()->query('status');
+        if ($status && strtoupper($status) !== 'ALL') {
+            $query->where('status', strtoupper($status));
+        }
+        return $query;
     }
 }

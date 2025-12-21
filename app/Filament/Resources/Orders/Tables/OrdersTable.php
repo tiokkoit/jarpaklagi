@@ -20,7 +20,16 @@ class OrdersTable
                 TextColumn::make('productPackage.full_name')->label('Paket'),
                 TextColumn::make('quantity')->label('Jumlah Paket'),
                 TextColumn::make('total_price')->label('Total Harga')->money('idr'),
-                BadgeColumn::make('status')->label('Status'),
+                BadgeColumn::make('status')
+                    ->label('Status')
+                    ->colors([
+                        'primary' => fn($state): bool => $state === 'NEW',
+                        'info' => fn($state): bool => $state === 'DIKIRIM',
+                        'danger' => fn($state): bool => $state === 'CANCEL',
+                        'success' => fn($state): bool => $state === 'SELESAI',
+                        'warning' => fn($state): bool => $state === 'DIKEMBALIKAN',
+                    ])
+                    ->sortable(),
                 TextColumn::make('payment')->label('Payment'),
             ])
             ->filters([
