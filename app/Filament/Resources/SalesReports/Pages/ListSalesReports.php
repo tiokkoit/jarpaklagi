@@ -6,6 +6,7 @@ use App\Filament\Resources\SalesReports\SalesReportResource;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Schemas\Components\Tabs\Tab;
 use App\Models\SalesReport;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -15,32 +16,6 @@ class ListSalesReports extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        $statusMap = [
-            'ALL' => ['label' => 'All', 'color' => 'secondary'],
-            'NEW' => ['label' => 'NEW', 'color' => 'primary'],
-            'DIKIRIM' => ['label' => 'DIKIRIM', 'color' => 'info'],
-            'CANCEL' => ['label' => 'CANCEL', 'color' => 'danger'],
-            'SELESAI' => ['label' => 'SELESAI', 'color' => 'success'],
-            'DIKEMBALIKAN' => ['label' => 'DIKEMBALIKAN', 'color' => 'warning'],
-        ];
-
-        $counts = SalesReport::query()->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c','status')->toArray();
-        $total = SalesReport::count();
-
-        $tabActions = [];
-        foreach ($statusMap as $key => $meta) {
-            $count = $key === 'ALL' ? $total : ($counts[$key] ?? 0);
-            $label = $meta['label'] . " ({$count})";
-
-            $url = $key === 'ALL' ? SalesReportResource::getUrl('index') : SalesReportResource::getUrl('index', ['status' => $key]);
-
-            $tabActions[] = Action::make('tab_' . $key)
-                ->label($label)
-                ->url($url)
-                ->color($meta['color'])
-                ->outlined();
-        }
-
         $import = Action::make('import_csv')
             ->label('Import CSV')
             ->form([
@@ -83,7 +58,30 @@ class ListSalesReports extends ListRecords
                 }
             });
 
-        return array_merge($tabActions, [$import]);
+        return [$import];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All')
+                ->badge(SalesReport::count()),
+
+            'cancel' => Tab::make('CANCEL')
+                ->query(fn ($query) => $query->where('status', 'CANCEL'))
+                ->badge(SalesReport::where('status', 'CANCEL')->count())
+                ->badgeColor('danger'),
+
+            'selesai' => Tab::make('SELESAI')
+                ->query(fn ($query) => $query->where('status', 'SELESAI'))
+                ->badge(SalesReport::where('status', 'SELESAI')->count())
+                ->badgeColor('success'),
+
+            'dikembalikan' => Tab::make('DIKEMBALIKAN')
+                ->query(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
+                ->badge(SalesReport::where('status', 'DIKEMBALIKAN')->count())
+                ->badgeColor('warning'),
+        ];
     }
 
     protected function getTableQuery(): Builder

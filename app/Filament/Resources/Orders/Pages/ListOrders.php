@@ -6,6 +6,7 @@ use App\Filament\Resources\Orders\OrderResource;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Schemas\Components\Tabs\Tab;
 use App\Models\ProductPackage;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,38 +83,9 @@ class ListOrders extends ListRecords
             ->icon('heroicon-o-plus')
             ->color('primary');
 
-        // build status tabs
-        $statusMap = [
-            'ALL' => ['label' => 'All', 'color' => 'secondary'],
-            'NEW' => ['label' => 'NEW', 'color' => 'primary'],
-            'DIKIRIM' => ['label' => 'DIKIRIM', 'color' => 'info'],
-            'CANCEL' => ['label' => 'CANCEL', 'color' => 'danger'],
-            'SELESAI' => ['label' => 'SELESAI', 'color' => 'success'],
-            'DIKEMBALIKAN' => ['label' => 'DIKEMBALIKAN', 'color' => 'warning'],
-        ];
-
-        // counts
-        $counts = Order::query()->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c','status')->toArray();
-        $total = Order::count();
-
-        $tabActions = [];
-        foreach ($statusMap as $key => $meta) {
-            $count = $key === 'ALL' ? $total : ($counts[$key] ?? 0);
-            $label = $meta['label'] . " ({$count})";
-
-            $url = $key === 'ALL' ? OrderResource::getUrl('index') : OrderResource::getUrl('index', ['status' => $key]);
-
-            $tabActions[] = Action::make('tab_' . $key)
-                ->label($label)
-                ->url($url)
-                ->color($meta['color'])
-                ->outlined();
-        }
-
-        // merge with parent actions
+        // merge with parent actions and ensure create exists
         $actions = parent::getHeaderActions();
 
-        // ensure create exists
         $hasCreate = collect($actions)->contains(function ($a) {
             try { return method_exists($a, 'getName') && $a->getName() === 'create'; } catch (\Throwable $e) { return false; }
         });
@@ -122,12 +94,42 @@ class ListOrders extends ListRecords
             array_unshift($actions, $createAction);
         }
 
-        // put tabs first
-        $actions = array_merge($tabActions, $actions);
-
         $actions[] = $importAction;
 
         return $actions;
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All')
+                ->badge(Order::count()),
+
+            'new' => Tab::make('NEW')
+                ->query(fn ($query) => $query->where('status', 'NEW'))
+                ->badge(Order::where('status', 'NEW')->count())
+                ->badgeColor('primary'),
+
+            'dikirim' => Tab::make('DIKIRIM')
+                ->query(fn ($query) => $query->where('status', 'DIKIRIM'))
+                ->badge(Order::where('status', 'DIKIRIM')->count())
+                ->badgeColor('info'),
+
+            'cancel' => Tab::make('CANCEL')
+                ->query(fn ($query) => $query->where('status', 'CANCEL'))
+                ->badge(Order::where('status', 'CANCEL')->count())
+                ->badgeColor('danger'),
+
+            'selesai' => Tab::make('SELESAI')
+                ->query(fn ($query) => $query->where('status', 'SELESAI'))
+                ->badge(Order::where('status', 'SELESAI')->count())
+                ->badgeColor('success'),
+
+            'dikembalikan' => Tab::make('DIKEMBALIKAN')
+                ->query(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
+                ->badge(Order::where('status', 'DIKEMBALIKAN')->count())
+                ->badgeColor('warning'),
+        ];
     }
 
     protected function getTableQuery(): Builder
