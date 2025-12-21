@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\SalesReports;
 
 use App\Filament\Resources\SalesReports\Pages\ListSalesReports;
-use App\Filament\Resources\SalesReports\Pages\CreateSalesReport;
-use App\Filament\Resources\SalesReports\Pages\EditSalesReport;
 use App\Filament\Resources\SalesReports\Schemas\SalesReportForm;
 use App\Filament\Resources\SalesReports\Tables\SalesReportsTable;
 use App\Models\SalesReport;
@@ -33,8 +31,6 @@ class SalesReportResource extends Resource
     {
         return [
             'index' => ListSalesReports::route('/'),
-            'create' => CreateSalesReport::route('/create'),
-            'edit' => EditSalesReport::route('/{record}/edit'),
         ];
     }
 }

@@ -24,6 +24,7 @@ class EditOrder extends EditRecord
         return [
             Action::make('validate_and_send')
                 ->label('Validate & Kirim')
+                ->color('success')
                 ->action(function () {
                     $order = $this->record;
 
@@ -52,6 +53,7 @@ class EditOrder extends EditRecord
                         // jika berhasil, ubah status ke DIKIRIM
                         $order->update(['status' => 'DIKIRIM']);
                         Notification::make()->success()->title('Order berhasil dikirim, stok dikurangi.')->send();
+                        $this->redirect($this->getResource()::getUrl('index'));
                     } catch (\Exception $e) {
                         // jika gagal, cancel dan simpan ke sales report
                         $order->update(['status' => 'CANCEL']);
@@ -73,11 +75,13 @@ class EditOrder extends EditRecord
                         ]);
 
                         Notification::make()->danger()->title('Stok tidak mencukupi. Order dibatalkan dan dicatat ke Sales Report.')->send();
+                        $this->redirect($this->getResource()::getUrl('index'));
                     }
                 }),
 
             Action::make('return_order')
                 ->label('Kembalikan (Return)')
+                ->color('warning')
                 ->requiresConfirmation()
                 ->action(function () {
                     $order = $this->record;
@@ -114,10 +118,12 @@ class EditOrder extends EditRecord
                     ]);
 
                     Notification::make()->success()->title('Order dikembalikan dan stok direstorasi.')->send();
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
             Action::make('complete')
                 ->label('Selesai')
+                ->color('primary')
                 ->requiresConfirmation()
                 ->action(function () {
                     $order = $this->record;
@@ -145,6 +151,7 @@ class EditOrder extends EditRecord
                     ]);
 
                     Notification::make()->success()->title('Order selesai dan dicatat ke Sales Report.')->send();
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }),
         ];
     }

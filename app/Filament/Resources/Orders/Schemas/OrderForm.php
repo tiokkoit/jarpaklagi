@@ -39,25 +39,7 @@ class OrderForm
             TextInput::make('kota')->required()->label('Kota'),
             TextInput::make('province')->required()->label('Provinsi'),
 
-            TextInput::make('quantity')->label('Jumlah Paket')->numeric()->required()->reactive()->afterStateUpdated(function ($state, $set, $get) {
-                $price = $get('price') ?? 0;
-                $set('total_price', (float)$price * (int)$state);
-            }),
-
-            TextInput::make('price')->label('Harga per Paket')->numeric()->required()->disabled(),
-            TextInput::make('total_price')->label('Total Harga')->numeric()->required()->disabled(),
-
-            Select::make('status')
-                ->label('Status')
-                ->options([
-                    'NEW' => 'NEW',
-                    'CANCEL' => 'CANCEL',
-                    'DIKIRIM' => 'DIKIRIM',
-                    'SELESAI' => 'SELESAI',
-                    'DIKEMBALIKAN' => 'DIKEMBALIKAN',
-                ])
-                ->default('NEW')
-                ->required(),
+            TextInput::make('quantity')->label('Jumlah Paket')->numeric()->required()->reactive(),
 
             Select::make('payment')
                 ->label('Payment')
