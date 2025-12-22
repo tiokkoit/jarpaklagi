@@ -1,0 +1,4 @@
+report_date,customer_name,customer_address,phone,kecamatan,kota,province,product_package_id,quantity,price,total_price,status,payment
+2025-12-01,Alice,Apt 1,0811223344,ExampleKec,ExampleCity,ExampleProv,1,1,50000,50000,cancel,COD
+2025-12-03,Bob,Apt 2,0822334455,ExampleKec,ExampleCity,ExampleProv,2,3,75000,225000,selesai,TRANSFER
+2025-12-04,Charlie,Apt 3,0833445566,ExampleKec,ExampleCity,ExampleProv,3,2,60000,120000,dikembalikan,COD
