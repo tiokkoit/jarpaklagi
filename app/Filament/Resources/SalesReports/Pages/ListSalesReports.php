@@ -65,7 +65,8 @@ class ListSalesReports extends ListRecords
     {
         return [
             'all' => Tab::make('All')
-                ->badge(SalesReport::count()),
+                ->badge(SalesReport::count())
+                ->badgeColor('secondary'),
 
             'cancel' => Tab::make('CANCEL')
                 ->query(fn ($query) => $query->where('status', 'CANCEL'))

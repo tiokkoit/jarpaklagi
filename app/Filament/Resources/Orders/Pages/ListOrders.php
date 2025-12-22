@@ -103,17 +103,18 @@ class ListOrders extends ListRecords
     {
         return [
             'all' => Tab::make('All')
-                ->badge(Order::count()),
+                ->badge(Order::count())
+                ->badgeColor('secondary'),
 
             'new' => Tab::make('NEW')
                 ->query(fn ($query) => $query->where('status', 'NEW'))
                 ->badge(Order::where('status', 'NEW')->count())
-                ->badgeColor('primary'),
+                ->badgeColor('info'),
 
             'dikirim' => Tab::make('DIKIRIM')
                 ->query(fn ($query) => $query->where('status', 'DIKIRIM'))
                 ->badge(Order::where('status', 'DIKIRIM')->count())
-                ->badgeColor('info'),
+                ->badgeColor('gray'),
 
             'cancel' => Tab::make('CANCEL')
                 ->query(fn ($query) => $query->where('status', 'CANCEL'))

@@ -19,8 +19,8 @@ class SalesReportsTable
             BadgeColumn::make('status')
                 ->label('Status')
                 ->colors([
-                    'primary' => fn($state): bool => $state === 'NEW',
-                    'info' => fn($state): bool => $state === 'DIKIRIM',
+                    'info' => fn($state): bool => $state === 'NEW',
+                    'gray' => fn($state): bool => $state === 'DIKIRIM',
                     'danger' => fn($state): bool => $state === 'CANCEL',
                     'success' => fn($state): bool => $state === 'SELESAI',
                     'warning' => fn($state): bool => $state === 'DIKEMBALIKAN',
