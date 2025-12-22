@@ -68,6 +68,9 @@ class ListSalesReports extends ListRecords
 
                         if (! $pkgId) { $skipped++; continue; }
 
+                        $pkg = ProductPackage::find($pkgId);
+                        if (! $pkg) { $skipped++; continue; }
+
                         $rawStatus = strtolower(trim($dataRow['status'] ?? ''));
                         $statusMap = [
                             'cancel' => 'CANCEL',
@@ -76,6 +79,10 @@ class ListSalesReports extends ListRecords
                         ];
                         if (! array_key_exists($rawStatus, $statusMap)) { $skipped++; continue; }
                         $status = $statusMap[$rawStatus];
+
+                        $price = $pkg->price;
+                        $quantity = (int)$dataRow['quantity'];
+                        $total = $price * $quantity;
 
                         SalesReport::create([
                             'report_date' => $dataRow['report_date'],
@@ -86,9 +93,9 @@ class ListSalesReports extends ListRecords
                             'kota' => $dataRow['kota'] ?? null,
                             'province' => $dataRow['province'] ?? null,
                             'product_package_id' => $pkgId,
-                            'quantity' => (int)$dataRow['quantity'],
-                            'price' => (float)($dataRow['price'] ?? 0),
-                            'total_price' => (float)($dataRow['total_price'] ?? 0),
+                            'quantity' => $quantity,
+                            'price' => $price,
+                            'total_price' => $total,
                             'status' => $status,
                             'payment' => $dataRow['payment'] ?? null,
                         ]);
