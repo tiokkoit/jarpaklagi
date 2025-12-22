@@ -15,11 +15,6 @@ class OrdersTable
         return $table
             ->columns([
                 TextColumn::make('order_date')->label('Tanggal')->date(),
-                TextColumn::make('customer_name')->label('Nama Customer'),
-                TextColumn::make('phone')->label('No HP'),
-                TextColumn::make('productPackage.full_name')->label('Paket'),
-                TextColumn::make('quantity')->label('Jumlah Paket'),
-                TextColumn::make('total_price')->label('Total Harga')->money('idr'),
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
@@ -28,12 +23,17 @@ class OrdersTable
                         'danger' => fn($state): bool => $state === 'CANCEL',
                         'success' => fn($state): bool => $state === 'SELESAI',
                         'warning' => fn($state): bool => $state === 'DIKEMBALIKAN',
-                    ])
-                    ->sortable(),
+                    ]),
+                TextColumn::make('customer_name')->label('Nama Customer'),
+                TextColumn::make('phone')->label('No HP'),
+                Textcolumn::make('customer_address')->label('Alamat Customer'),
+                Textcolumn::make('kecamatan')->label('Kecamatan'),
+                Textcolumn::make('kota')->label('Kota'),
+                Textcolumn::make('province')->label('Provinsi'),
+                TextColumn::make('productPackage.name')->label('Paket'),
+                TextColumn::make('quantity')->label('Jumlah Paket'),
+                TextColumn::make('total_price')->label('Total Harga')->money('idr'),
                 TextColumn::make('payment')->label('Payment'),
-            ])
-            ->filters([
-                Filter::make('status'),
             ])
             ->defaultSort('order_date','desc');
     }
