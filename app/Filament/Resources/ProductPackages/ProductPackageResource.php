@@ -19,6 +19,7 @@ class ProductPackageResource extends Resource
     protected static ?string $model = ProductPackage::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box-arrow-down';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

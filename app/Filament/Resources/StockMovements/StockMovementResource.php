@@ -20,7 +20,7 @@ class StockMovementResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
     protected static ?string $navigationLabel = 'Stock Movements';
     #protected static ?string $navigationGroup = 'Inventory';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function canCreate(): bool
     {
