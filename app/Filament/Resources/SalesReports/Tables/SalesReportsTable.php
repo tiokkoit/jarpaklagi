@@ -30,6 +30,7 @@ class SalesReportsTable
             TextColumn::make('productPackage.name')->label('Paket'),
             TextColumn::make('quantity')->label('Jumlah Paket'),
             TextColumn::make('total_price')->label('Total Harga')->money('idr'),
+            TextColumn::make('payment')->label('Payment'),
             
         ])->defaultSort('report_date','desc');
     }
