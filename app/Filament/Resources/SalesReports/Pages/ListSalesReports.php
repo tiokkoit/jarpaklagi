@@ -40,7 +40,10 @@ class ListSalesReports extends ListRecords
                     $header = null;
                     $count = 0;
                     $skipped = 0;
+                    $skipDetails = [];
+                    $rowIndex = 0;
                     while (($row = fgetcsv($handle, 0, ',')) !== false) {
+                        $rowIndex++;
                         if (! $header) {
                             $row[0] = preg_replace('/^\xEF\xBB\xBF/', '', $row[0]);
                             $header = array_map(fn($h) => strtolower(trim($h)), $row);
@@ -48,28 +51,46 @@ class ListSalesReports extends ListRecords
                         }
                         $dataRow = array_combine($header, $row);
                         // require report_date, quantity, status, and a product package identifier
+                        $missing = [];
+                        if (empty($dataRow['report_date'])) { $missing[] = 'report_date'; }
+                        if (empty($dataRow['quantity'])) { $missing[] = 'quantity'; }
+                        if (empty($dataRow['status'])) { $missing[] = 'status'; }
                         $hasPkg = !empty($dataRow['product_package_id']) || !empty($dataRow['product_package_code']) || !empty($dataRow['product_package_name']);
-                        if (empty($dataRow['report_date']) || empty($dataRow['quantity']) || empty($dataRow['status']) || ! $hasPkg) {
+                        if (! $hasPkg) { $missing[] = 'product_package_id|product_package_code|product_package_name'; }
+                        if (! empty($missing)) {
                             $skipped++;
+                            $skipDetails[] = "Line {$rowIndex}: missing required columns: " . implode(', ', $missing);
                             continue;
                         }
 
                         // resolve product_package_id from id|code|name
                         $pkgId = null;
+                        $pkgLookup = null;
                         if (!empty($dataRow['product_package_id'])) {
                             $pkgId = (int)$dataRow['product_package_id'];
+                            $pkgLookup = "id={$pkgId}";
                         } elseif (!empty($dataRow['product_package_code'])) {
                             $pkg = ProductPackage::where('code', $dataRow['product_package_code'])->first();
                             $pkgId = $pkg?->id;
+                            $pkgLookup = "code={$dataRow['product_package_code']}";
                         } elseif (!empty($dataRow['product_package_name'])) {
                             $pkg = ProductPackage::where('name', $dataRow['product_package_name'])->first();
                             $pkgId = $pkg?->id;
+                            $pkgLookup = "name={$dataRow['product_package_name']}";
                         }
 
-                        if (! $pkgId) { $skipped++; continue; }
+                        if (! $pkgId) {
+                            $skipped++;
+                            $skipDetails[] = "Line {$rowIndex}: product package not found ({$pkgLookup})";
+                            continue;
+                        }
 
                         $pkg = ProductPackage::find($pkgId);
-                        if (! $pkg) { $skipped++; continue; }
+                        if (! $pkg) {
+                            $skipped++;
+                            $skipDetails[] = "Line {$rowIndex}: product package id {$pkgId} not found";
+                            continue;
+                        }
 
                         $rawStatus = strtolower(trim($dataRow['status'] ?? ''));
                         $statusMap = [
@@ -77,7 +98,11 @@ class ListSalesReports extends ListRecords
                             'selesai' => 'SELESAI',
                             'dikembalikan' => 'DIKEMBALIKAN',
                         ];
-                        if (! array_key_exists($rawStatus, $statusMap)) { $skipped++; continue; }
+                        if (! array_key_exists($rawStatus, $statusMap)) {
+                            $skipped++;
+                            $skipDetails[] = "Line {$rowIndex}: invalid status '{$dataRow['status']}'";
+                            continue;
+                        }
                         $status = $statusMap[$rawStatus];
 
                         $price = $pkg->price;
@@ -102,7 +127,15 @@ class ListSalesReports extends ListRecords
                         $count++;
                     }
                     fclose($handle);
-                    \Filament\Notifications\Notification::make()->success()->title("Import selesai: {$count} baris ditambahkan, {$skipped} baris dilewati.")->send();
+                    if ($skipped > 0) {
+                        $timestamp = now()->format('Ymd_His');
+                        $logPath = "import_logs/sales_reports_import_{$timestamp}.log";
+                        $content = "Import: SalesReports\nFile: {$path}\nInserted: {$count}\nSkipped: {$skipped}\n\nDetails:\n" . implode("\n", $skipDetails);
+                        Storage::disk('local')->put($logPath, $content);
+                        \Filament\Notifications\Notification::make()->success()->title("Import selesai: {$count} baris ditambahkan, {$skipped} baris dilewati.")->body("Log: {$logPath}")->send();
+                    } else {
+                        \Filament\Notifications\Notification::make()->success()->title("Import selesai: {$count} baris ditambahkan.")->send();
+                    }
                 }
             });
 
