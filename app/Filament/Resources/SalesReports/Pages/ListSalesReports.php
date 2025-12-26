@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\ProductPackage;
 use App\Models\SalesReport;
 use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class ListSalesReports extends ListRecords
 {
@@ -144,26 +145,82 @@ class ListSalesReports extends ListRecords
 
     public function getTabs(): array
     {
+        $tableFilters = request()->query('tableFilters') ?? request()->query('table_filters') ?? [];
+        if (is_string($tableFilters)) {
+            $decoded = json_decode(urldecode($tableFilters), true);
+            if (is_array($decoded)) {
+                $tableFilters = $decoded;
+            }
+        }
+        $timeData = $tableFilters['time'] ?? [];
+
+        $baseQuery = SalesReport::query();
+        $this->applyTimeFilter($baseQuery, $timeData);
+
+        $counts = [
+            'all' => (clone $baseQuery)->count(),
+            'cancel' => (clone $baseQuery)->where('status', 'CANCEL')->count(),
+            'selesai' => (clone $baseQuery)->where('status', 'SELESAI')->count(),
+            'dikembalikan' => (clone $baseQuery)->where('status', 'DIKEMBALIKAN')->count(),
+        ];
+
         return [
             'all' => Tab::make('All')
-                ->badge(SalesReport::count())
+                ->badge($counts['all'])
                 ->badgeColor('secondary'),
 
             'cancel' => Tab::make('CANCEL')
                 ->query(fn ($query) => $query->where('status', 'CANCEL'))
-                ->badge(SalesReport::where('status', 'CANCEL')->count())
+                ->badge($counts['cancel'])
                 ->badgeColor('danger'),
 
             'selesai' => Tab::make('SELESAI')
                 ->query(fn ($query) => $query->where('status', 'SELESAI'))
-                ->badge(SalesReport::where('status', 'SELESAI')->count())
+                ->badge($counts['selesai'])
                 ->badgeColor('success'),
 
             'dikembalikan' => Tab::make('DIKEMBALIKAN')
                 ->query(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
-                ->badge(SalesReport::where('status', 'DIKEMBALIKAN')->count())
+                ->badge($counts['dikembalikan'])
                 ->badgeColor('warning'),
         ];
+    }
+
+    protected function applyTimeFilter(Builder $query, array $data): Builder
+    {
+        $preset = $data['preset'] ?? null;
+        if ($preset === 'today') {
+            return $query->whereDate('report_date', Carbon::today()->toDateString());
+        }
+
+        if ($preset === 'last_3') {
+            return $query->whereBetween('report_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]);
+        }
+
+        if ($preset === 'this_week') {
+            return $query->whereBetween('report_date', [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]);
+        }
+
+        if ($preset === 'last_week') {
+            return $query->whereBetween('report_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]);
+        }
+
+        if ($preset === 'month' && ! empty($data['month_year']) && ! empty($data['month_number'])) {
+            $y = (int) $data['month_year'];
+            $m = (int) $data['month_number'];
+            return $query->whereYear('report_date', $y)->whereMonth('report_date', $m);
+        }
+
+        if ($preset === 'year' && ! empty($data['year_only'])) {
+            $y = (int) $data['year_only'];
+            return $query->whereYear('report_date', $y);
+        }
+
+        if ($preset === 'range' && ! empty($data['start']) && ! empty($data['end'])) {
+            return $query->whereBetween('report_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]);
+        }
+
+        return $query;
     }
 
     protected function getTableQuery(): Builder

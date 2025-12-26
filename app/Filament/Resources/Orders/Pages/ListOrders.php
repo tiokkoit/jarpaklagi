@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\ProductPackage;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class ListOrders extends ListRecords
 {
@@ -166,36 +167,95 @@ class ListOrders extends ListRecords
 
     public function getTabs(): array
     {
-        return [
-            'all' => Tab::make('All')
-                ->badge(Order::count())
-                ->badgeColor('secondary'),
+        // parse current table filters (Filament typically sends them under "tableFilters")
+        $tableFilters = request()->query('tableFilters') ?? request()->query('table_filters') ?? [];
+        if (is_string($tableFilters)) {
+            $decoded = json_decode(urldecode($tableFilters), true);
+            if (is_array($decoded)) {
+                $tableFilters = $decoded;
+            }
+        }
+        $timeData = $tableFilters['time'] ?? [];
 
+        $baseQuery = Order::query();
+        $this->applyTimeFilter($baseQuery, $timeData);
+
+        $counts = [
+            'new' => (clone $baseQuery)->where('status', 'NEW')->count(),
+            'dikirim' => (clone $baseQuery)->where('status', 'DIKIRIM')->count(),
+            'cancel' => (clone $baseQuery)->where('status', 'CANCEL')->count(),
+            'selesai' => (clone $baseQuery)->where('status', 'SELESAI')->count(),
+            'dikembalikan' => (clone $baseQuery)->where('status', 'DIKEMBALIKAN')->count(),
+            'all' => (clone $baseQuery)->count(),
+        ];
+
+        return [
             'new' => Tab::make('NEW')
                 ->query(fn ($query) => $query->where('status', 'NEW'))
-                ->badge(Order::where('status', 'NEW')->count())
+                ->badge($counts['new'])
                 ->badgeColor('info'),
 
             'dikirim' => Tab::make('DIKIRIM')
                 ->query(fn ($query) => $query->where('status', 'DIKIRIM'))
-                ->badge(Order::where('status', 'DIKIRIM')->count())
+                ->badge($counts['dikirim'])
                 ->badgeColor('gray'),
 
             'cancel' => Tab::make('CANCEL')
                 ->query(fn ($query) => $query->where('status', 'CANCEL'))
-                ->badge(Order::where('status', 'CANCEL')->count())
+                ->badge($counts['cancel'])
                 ->badgeColor('danger'),
 
             'selesai' => Tab::make('SELESAI')
                 ->query(fn ($query) => $query->where('status', 'SELESAI'))
-                ->badge(Order::where('status', 'SELESAI')->count())
+                ->badge($counts['selesai'])
                 ->badgeColor('success'),
 
             'dikembalikan' => Tab::make('DIKEMBALIKAN')
                 ->query(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
-                ->badge(Order::where('status', 'DIKEMBALIKAN')->count())
+                ->badge($counts['dikembalikan'])
                 ->badgeColor('warning'),
+            
+            'all' => Tab::make('All')
+                ->badge($counts['all'])
+                ->badgeColor('secondary'),
         ];
+    }
+
+    protected function applyTimeFilter(Builder $query, array $data): Builder
+    {
+        $preset = $data['preset'] ?? null;
+        if ($preset === 'today') {
+            return $query->whereDate('order_date', Carbon::today()->toDateString());
+        }
+
+        if ($preset === 'last_3') {
+            return $query->whereBetween('order_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]);
+        }
+
+        if ($preset === 'this_week') {
+            return $query->whereBetween('order_date', [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]);
+        }
+
+        if ($preset === 'last_week') {
+            return $query->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]);
+        }
+
+        if ($preset === 'month' && ! empty($data['month_year']) && ! empty($data['month_number'])) {
+            $y = (int) $data['month_year'];
+            $m = (int) $data['month_number'];
+            return $query->whereYear('order_date', $y)->whereMonth('order_date', $m);
+        }
+
+        if ($preset === 'year' && ! empty($data['year_only'])) {
+            $y = (int) $data['year_only'];
+            return $query->whereYear('order_date', $y);
+        }
+
+        if ($preset === 'range' && ! empty($data['start']) && ! empty($data['end'])) {
+            return $query->whereBetween('order_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]);
+        }
+
+        return $query;
     }
 
     protected function getTableQuery(): Builder
