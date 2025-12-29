@@ -32,8 +32,13 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Emerald,
             ])
-            
+            ->font('Poppins')
+            ->brandName('StockkuApp')
+            ->brandLogo('/images/stockku-logo.png')
+            ->favicon('/images/stockku-favicon.png')
+            ->brandLogoHeight(fn()=>auth ()->user() ? '3rem' : '8rem')
             ->topNavigation()
+            ->spa()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
