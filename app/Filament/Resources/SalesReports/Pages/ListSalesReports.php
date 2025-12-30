@@ -21,6 +21,15 @@ class ListSalesReports extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('export_pdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->url(fn() => route('exports.sales-report.pdf', [
+                    'status' => $this->activeTab ?? 'all',
+                ]))
+                ->openUrlInNewTab(),
+
             Action::make('import_csv')
                 ->label('Import CSV')
                 ->icon('heroicon-o-arrow-up-tray')
@@ -32,7 +41,7 @@ class ListSalesReports extends ListRecords
                         ->disk('local')
                         ->directory('imports'),
                 ])
-                ->action(fn (array $data) => $this->handleImport($data)),
+                ->action(fn(array $data) => $this->handleImport($data)),
         ];
     }
 
@@ -54,17 +63,17 @@ class ListSalesReports extends ListRecords
                 ->badgeColor('secondary'),
 
             'cancel' => Tab::make('CANCEL')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'CANCEL'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'CANCEL'))
                 ->badge((clone $baseQuery)->where('status', 'CANCEL')->count())
                 ->badgeColor('danger'),
 
             'selesai' => Tab::make('SELESAI')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'SELESAI'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'SELESAI'))
                 ->badge((clone $baseQuery)->where('status', 'SELESAI')->count())
                 ->badgeColor('success'),
 
             'dikembalikan' => Tab::make('DIKEMBALIKAN')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'DIKEMBALIKAN'))
                 ->badge((clone $baseQuery)->where('status', 'DIKEMBALIKAN')->count())
                 ->badgeColor('warning'),
         ];
@@ -78,18 +87,18 @@ class ListSalesReports extends ListRecords
         $preset = $data['preset'] ?? null;
 
         return match ($preset) {
-            'today'     => $query->whereDate('report_date', Carbon::today()->toDateString()),
-            'last_3'    => $query->whereBetween('report_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]),
+            'today' => $query->whereDate('report_date', Carbon::today()->toDateString()),
+            'last_3' => $query->whereBetween('report_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]),
             'this_week' => $query->whereBetween('report_date', [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]),
             'last_week' => $query->whereBetween('report_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]),
-            'month'     => (isset($data['month_year'], $data['month_number'])) 
-                            ? $query->whereYear('report_date', (int)$data['month_year'])->whereMonth('report_date', (int)$data['month_number']) 
-                            : $query,
-            'year'      => (!empty($data['year_only'])) ? $query->whereYear('report_date', (int)$data['year_only']) : $query,
-            'range'     => (isset($data['start'], $data['end'])) 
-                            ? $query->whereBetween('report_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]) 
-                            : $query,
-            default     => $query,
+            'month' => (isset($data['month_year'], $data['month_number']))
+            ? $query->whereYear('report_date', (int) $data['month_year'])->whereMonth('report_date', (int) $data['month_number'])
+            : $query,
+            'year' => (!empty($data['year_only'])) ? $query->whereYear('report_date', (int) $data['year_only']) : $query,
+            'range' => (isset($data['start'], $data['end']))
+            ? $query->whereBetween('report_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()])
+            : $query,
+            default => $query,
         };
     }
 
@@ -99,7 +108,8 @@ class ListSalesReports extends ListRecords
     protected function handleImport(array $data): void
     {
         $path = $data['file'] ?? null;
-        if (empty($path)) return;
+        if (empty($path))
+            return;
 
         $fullPath = Storage::disk('local')->path($path);
         if (!file_exists($fullPath)) {
@@ -133,9 +143,9 @@ class ListSalesReports extends ListRecords
 
                 // Resolving package
                 $pkg = ProductPackage::where('id', $dataRow['product_package_id'] ?? null)
-                        ->orWhere('code', $dataRow['product_package_code'] ?? null)
-                        ->orWhere('name', $dataRow['product_package_name'] ?? null)
-                        ->first();
+                    ->orWhere('code', $dataRow['product_package_code'] ?? null)
+                    ->orWhere('name', $dataRow['product_package_name'] ?? null)
+                    ->first();
 
                 if (!$pkg) {
                     $skipped++;
@@ -166,9 +176,9 @@ class ListSalesReports extends ListRecords
                     'kota' => $dataRow['kota'] ?? null,
                     'province' => $dataRow['province'] ?? null,
                     'product_package_id' => $pkg->id,
-                    'quantity' => (int)$dataRow['quantity'],
+                    'quantity' => (int) $dataRow['quantity'],
                     'price' => $pkg->price,
-                    'total_price' => $pkg->price * (int)$dataRow['quantity'],
+                    'total_price' => $pkg->price * (int) $dataRow['quantity'],
                     'status' => $statusMap[$rawStatus],
                     'payment' => $dataRow['payment'] ?? null,
                 ]);
