@@ -11,7 +11,6 @@ use App\Models\Product;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class ProductResource extends Resource
@@ -33,9 +32,7 @@ class ProductResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -45,5 +42,14 @@ class ProductResource extends Resource
             'create' => CreateProduct::route('/create'),
             'edit' => EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Only Manager and Inventory can access Products
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole(['manager', 'inventory']);
     }
 }

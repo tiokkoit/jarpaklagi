@@ -43,4 +43,13 @@ class OrderResource extends Resource
             'edit' => EditOrder::route('/{record}/edit'),
         ];
     }
+
+    /**
+     * Only Manager and Admin can access Orders
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole(['manager', 'admin']);
+    }
 }

@@ -19,23 +19,20 @@ class StockMovementResource extends Resource
     protected static ?string $model = StockMovement::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
     protected static ?string $navigationLabel = 'Stock Movements';
-    #protected static ?string $navigationGroup = 'Inventory';
     protected static ?int $navigationSort = 3;
 
     public static function canCreate(): bool
     {
-        return true; // ✅ Boleh create manual
+        return true;
     }
 
     public static function canEdit($record): bool
     {
-        // ✅ Hanya boleh edit jika berasal dari input manual
         return $record?->reference_type === null;
     }
 
     public static function canDelete($record): bool
     {
-        // 🚫 Tidak boleh hapus data sistem
         return $record?->reference_type === null;
     }
 
@@ -62,5 +59,14 @@ class StockMovementResource extends Resource
             'view' => ViewStockMovement::route('/{record}'),
             'edit' => EditStockMovement::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Only Manager and Inventory can access Stock Movements
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole(['manager', 'inventory']);
     }
 }

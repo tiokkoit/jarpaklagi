@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile() // Default profile for name, email, password
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -37,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('StockkuApp')
             ->brandLogo('/images/stockku-logo.png')
             ->favicon('/images/stockku-favicon.png')
-            ->brandLogoHeight(fn()=>auth ()->user() ? '3rem' : '8rem')
+            ->brandLogoHeight(fn() => auth()->user() ? '3rem' : '8rem')
             ->topNavigation()
             ->spa()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
@@ -48,8 +49,6 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 InventoryStatsOverview::class,
-                #AccountWidget::class,
-               # FilamentInfoWidget::class,
             ])
             ->plugins([
                 FilamentApexChartsPlugin::make()

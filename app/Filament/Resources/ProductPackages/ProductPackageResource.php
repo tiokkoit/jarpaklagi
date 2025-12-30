@@ -11,7 +11,6 @@ use App\Models\ProductPackage;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class ProductPackageResource extends Resource
@@ -33,9 +32,7 @@ class ProductPackageResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -45,5 +42,14 @@ class ProductPackageResource extends Resource
             'create' => CreateProductPackage::route('/create'),
             'edit' => EditProductPackage::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Only Manager and Admin can access Product Packages
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole(['manager', 'admin']);
     }
 }

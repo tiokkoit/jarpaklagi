@@ -34,4 +34,13 @@ class SalesReportResource extends Resource
             'index' => ListSalesReports::route('/'),
         ];
     }
+
+    /**
+     * Only Manager and Admin can access Sales Reports
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole(['manager', 'admin']);
+    }
 }
