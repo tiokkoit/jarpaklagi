@@ -40,6 +40,13 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('StockkuApp')
             ->brandLogo('/images/stockku-logo.png')
             ->favicon('/images/stockku-favicon.png')
+            ->renderHook(
+                'panels::head.end',
+                fn(): string => request()->routeIs('filament.admin.auth.login')
+                ? '<link rel="stylesheet" href="' . asset('css/filament-login.css') . '" />' .
+                '<script>document.documentElement.classList.add("dark");</script>'
+                : ''
+            )
             ->brandLogoHeight(fn() => auth()->user() ? '3rem' : '8rem')
             ->topNavigation()
             ->spa()
