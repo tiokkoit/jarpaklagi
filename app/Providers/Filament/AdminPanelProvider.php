@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->profile() // Default profile for name, email, password
             ->colors([
                 'primary' => Color::Emerald,
+                'teal' => Color::Teal,
+                'purple' => Color::Purple,
             ])
             ->font('Poppins')
             ->brandName('StockkuApp')

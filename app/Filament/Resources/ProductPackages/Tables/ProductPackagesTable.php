@@ -57,8 +57,7 @@ class ProductPackagesTable
                 TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->since()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
             ])
             ->defaultSort('updated_at', 'desc')
             ->recordUrl(null) // Biar tidak klik row langsung masuk edit (lebih aman)
@@ -67,23 +66,11 @@ class ProductPackagesTable
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
                     ->color('primary'),
-
-                DeleteAction::make()
-                    ->label('Hapus')
-                    ->color('danger'),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label('Hapus Terpilih')
-                        ->color('danger')
-                        ->requiresConfirmation(),
-                ]),
             ])
             ->striped()
             ->paginated([10, 25, 50])
             ->emptyStateHeading('Belum ada paket produk')
             ->emptyStateDescription('Tambahkan paket baru untuk mulai mengelola variasi produk.')
-            ->emptyStateIcon('heroicon-o-cube');
+            ->emptyStateIcon('heroicon-o-square-3-stack-3d');
     }
 }

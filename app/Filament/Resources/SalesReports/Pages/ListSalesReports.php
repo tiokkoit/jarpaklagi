@@ -180,17 +180,20 @@ class ListSalesReports extends ListRecords
             'cancel' => Tab::make('CANCEL')
                 ->modifyQueryUsing(fn($query) => $query->where('status', 'CANCEL'))
                 ->badge((clone $baseQuery)->where('status', 'CANCEL')->count())
-                ->badgeColor('danger'),
+                ->badgeColor('danger')
+                ->icon('heroicon-o-no-symbol'),
 
             'selesai' => Tab::make('SELESAI')
                 ->modifyQueryUsing(fn($query) => $query->where('status', 'SELESAI'))
                 ->badge((clone $baseQuery)->where('status', 'SELESAI')->count())
-                ->badgeColor('success'),
+                ->badgeColor('success')
+                ->icon('heroicon-o-check-badge'),
 
             'dikembalikan' => Tab::make('DIKEMBALIKAN')
                 ->modifyQueryUsing(fn($query) => $query->where('status', 'DIKEMBALIKAN'))
                 ->badge((clone $baseQuery)->where('status', 'DIKEMBALIKAN')->count())
-                ->badgeColor('warning'),
+                ->badgeColor('warning')
+                ->icon('heroicon-o-backspace'),
         ];
     }
 

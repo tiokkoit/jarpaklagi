@@ -26,17 +26,32 @@ class OrdersTable
                         'danger' => fn($state): bool => $state === 'CANCEL',
                         'success' => fn($state): bool => $state === 'SELESAI',
                         'warning' => fn($state): bool => $state === 'DIKEMBALIKAN',
+                    ])
+                    ->icons([
+                        'heroicon-o-sparkles' => 'NEW',
+                        'heroicon-o-truck' => 'DIKIRIM',
+                        'heroicon-o-no-symbol' => 'CANCEL',
+                        'heroicon-o-check-badge' => 'SELESAI',
+                        'heroicon-o-backspace' => 'DIKEMBALIKAN',
                     ]),
-                TextColumn::make('customer_name')->label('Nama Customer'),
-                TextColumn::make('phone')->label('No HP'),
-                TextColumn::make('customer_address')->label('Alamat Customer'),
-                TextColumn::make('kecamatan')->label('Kecamatan'),
-                TextColumn::make('kota')->label('Kota'),
-                TextColumn::make('province')->label('Provinsi'),
+                TextColumn::make('customer_name')->label('Nama Customer')->icon('heroicon-o-user')->searchable(),
+                TextColumn::make('phone')->label('No HP')->icon('heroicon-o-phone')->searchable(),
+                TextColumn::make('customer_address')->label('Alamat Customer')->icon('heroicon-o-map-pin')->searchable(),
+                TextColumn::make('kecamatan')->label('Kecamatan')->searchable(),
+                TextColumn::make('kota')->label('Kota')->searchable(),
+                TextColumn::make('province')->label('Provinsi')->searchable(),
                 TextColumn::make('productPackage.name')->label('Paket'),
                 TextColumn::make('quantity')->label('Jumlah Paket'),
                 TextColumn::make('total_price')->label('Total Harga')->money('idr'),
-                TextColumn::make('payment')->label('Payment'),
+                BadgeColumn::make('payment')->label('Payment')
+                ->colors([
+                    'teal' => fn($state): bool => $state === 'COD',
+                    'purple' => fn($state): bool => $state === 'TRANSFER',
+                ])
+                ->icons([
+                    'heroicon-o-banknotes' => 'COD',
+                    'heroicon-o-credit-card' => 'TRANSFER',
+                ]),
             ])
             ->filters([
                 Filter::make('time')
@@ -58,26 +73,26 @@ class OrdersTable
 
                         DatePicker::make('start')
                             ->label('Start Date')
-                            ->visible(fn ($get) => $get('preset') === 'range'),
+                            ->visible(fn($get) => $get('preset') === 'range'),
 
                         DatePicker::make('end')
                             ->label('End Date')
-                            ->visible(fn ($get) => $get('preset') === 'range'),
+                            ->visible(fn($get) => $get('preset') === 'range'),
 
                         FormSelect::make('month_year')
                             ->label('Year')
-                            ->options(fn () => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
-                            ->visible(fn ($get) => $get('preset') === 'month'),
+                            ->options(fn() => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
+                            ->visible(fn($get) => $get('preset') === 'month'),
 
                         FormSelect::make('month_number')
                             ->label('Month')
-                            ->options(fn () => array_combine(range(1, 12), ['January','February','March','April','May','June','July','August','September','October','November','December']))
-                            ->visible(fn ($get) => $get('preset') === 'month'),
+                            ->options(fn() => array_combine(range(1, 12), ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']))
+                            ->visible(fn($get) => $get('preset') === 'month'),
 
                         FormSelect::make('year_only')
                             ->label('Year')
-                            ->options(fn () => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
-                            ->visible(fn ($get) => $get('preset') === 'year'),
+                            ->options(fn() => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
+                            ->visible(fn($get) => $get('preset') === 'year'),
                     ])
                     ->query(function ($query, array $data) {
                         $preset = $data['preset'] ?? null;
@@ -97,24 +112,24 @@ class OrdersTable
                             return $query->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]);
                         }
 
-                        if ($preset === 'month' && ! empty($data['month_year']) && ! empty($data['month_number'])) {
-                            $y = (int)$data['month_year'];
-                            $m = (int)$data['month_number'];
+                        if ($preset === 'month' && !empty($data['month_year']) && !empty($data['month_number'])) {
+                            $y = (int) $data['month_year'];
+                            $m = (int) $data['month_number'];
                             return $query->whereYear('order_date', $y)->whereMonth('order_date', $m);
                         }
 
-                        if ($preset === 'year' && ! empty($data['year_only'])) {
-                            $y = (int)$data['year_only'];
+                        if ($preset === 'year' && !empty($data['year_only'])) {
+                            $y = (int) $data['year_only'];
                             return $query->whereYear('order_date', $y);
                         }
 
-                        if ($preset === 'range' && ! empty($data['start']) && ! empty($data['end'])) {
+                        if ($preset === 'range' && !empty($data['start']) && !empty($data['end'])) {
                             return $query->whereBetween('order_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]);
                         }
 
                         return $query;
                     }),
             ])
-            ->defaultSort('order_date','desc');
+            ->defaultSort('order_date', 'desc');
     }
 }

@@ -93,8 +93,8 @@ class StockMovementsTable
 
                 TextColumn::make('createdBy.name')
                     ->label('By')
-                    ->default('System')
-                    ->toggleable(),
+                    ->searchable()
+                    ->default('System'),
 
                 TextColumn::make('created_at')
                     ->label('Date')
@@ -130,6 +130,7 @@ class StockMovementsTable
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
+            ->recordUrl(null) 
             ->poll('30s'); // Auto refresh every 30 seconds
     }
 }

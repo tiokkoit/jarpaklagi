@@ -36,7 +36,7 @@ class ListOrders extends ListRecords
                         ->disk('local')
                         ->directory('imports'),
                 ])
-                ->action(fn (array $data) => $this->runImport($data)),
+                ->action(fn(array $data) => $this->runImport($data)),
 
             Action::make('create')
                 ->label('Tambah Order')
@@ -56,7 +56,7 @@ class ListOrders extends ListRecords
 
         // Buat query dasar
         $baseQuery = Order::query();
-        
+
         // Terapkan filter waktu ke query dasar (sinkron dengan filter tabel)
         $baseQuery = $this->applyTimeFilter($baseQuery, $timeData);
 
@@ -66,29 +66,34 @@ class ListOrders extends ListRecords
                 ->badgeColor('secondary'),
 
             'new' => Tab::make('NEW')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'NEW'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'NEW'))
                 ->badge((clone $baseQuery)->where('status', 'NEW')->count())
-                ->badgeColor('info'),
+                ->badgeColor('info')
+                ->icon('heroicon-o-sparkles'),
 
             'dikirim' => Tab::make('DIKIRIM')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'DIKIRIM'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'DIKIRIM'))
                 ->badge((clone $baseQuery)->where('status', 'DIKIRIM')->count())
-                ->badgeColor('gray'),
+                ->badgeColor('gray')
+                ->icon('heroicon-o-truck'),
 
             'selesai' => Tab::make('SELESAI')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'SELESAI'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'SELESAI'))
                 ->badge((clone $baseQuery)->where('status', 'SELESAI')->count())
-                ->badgeColor('success'),
+                ->badgeColor('success')
+                ->icon('heroicon-o-check-badge'),
 
             'cancel' => Tab::make('CANCEL')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'CANCEL'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'CANCEL'))
                 ->badge((clone $baseQuery)->where('status', 'CANCEL')->count())
-                ->badgeColor('danger'),
+                ->badgeColor('danger')
+                ->icon('heroicon-o-no-symbol'),
 
             'dikembalikan' => Tab::make('DIKEMBALIKAN')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 'DIKEMBALIKAN'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'DIKEMBALIKAN'))
                 ->badge((clone $baseQuery)->where('status', 'DIKEMBALIKAN')->count())
-                ->badgeColor('warning'),
+                ->badgeColor('warning')
+                ->icon('heroicon-o-backspace'),
         ];
     }
 
@@ -100,18 +105,18 @@ class ListOrders extends ListRecords
         $preset = $data['preset'] ?? null;
 
         return match ($preset) {
-            'today'     => $query->whereDate('order_date', Carbon::today()->toDateString()),
-            'last_3'    => $query->whereBetween('order_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]),
+            'today' => $query->whereDate('order_date', Carbon::today()->toDateString()),
+            'last_3' => $query->whereBetween('order_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]),
             'this_week' => $query->whereBetween('order_date', [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]),
             'last_week' => $query->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]),
-            'month'     => (isset($data['month_year'], $data['month_number'])) 
-                            ? $query->whereYear('order_date', (int)$data['month_year'])->whereMonth('order_date', (int)$data['month_number']) 
-                            : $query,
-            'year'      => (!empty($data['year_only'])) ? $query->whereYear('order_date', (int)$data['year_only']) : $query,
-            'range'     => (isset($data['start'], $data['end'])) 
-                            ? $query->whereBetween('order_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]) 
-                            : $query,
-            default     => $query,
+            'month' => (isset($data['month_year'], $data['month_number']))
+            ? $query->whereYear('order_date', (int) $data['month_year'])->whereMonth('order_date', (int) $data['month_number'])
+            : $query,
+            'year' => (!empty($data['year_only'])) ? $query->whereYear('order_date', (int) $data['year_only']) : $query,
+            'range' => (isset($data['start'], $data['end']))
+            ? $query->whereBetween('order_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()])
+            : $query,
+            default => $query,
         };
     }
 
@@ -121,7 +126,8 @@ class ListOrders extends ListRecords
     protected function runImport(array $data): void
     {
         $path = $data['file'] ?? null;
-        if (empty($path)) return;
+        if (empty($path))
+            return;
 
         $fullPath = Storage::disk('local')->path($path);
         if (!file_exists($fullPath)) {
@@ -153,8 +159,8 @@ class ListOrders extends ListRecords
                 }
 
                 $pkg = ProductPackage::where('id', $dataRow['product_package_id'] ?? null)
-                        ->orWhere('code', $dataRow['product_package_code'] ?? null)
-                        ->first();
+                    ->orWhere('code', $dataRow['product_package_code'] ?? null)
+                    ->first();
 
                 if (!$pkg) {
                     $skipped++;
@@ -163,8 +169,11 @@ class ListOrders extends ListRecords
                 }
 
                 $statusMap = [
-                    'new' => 'NEW', 'dikirim' => 'DIKIRIM', 'selesai' => 'SELESAI',
-                    'cancel' => 'CANCEL', 'dikembalikan' => 'DIKEMBALIKAN'
+                    'new' => 'NEW',
+                    'dikirim' => 'DIKIRIM',
+                    'selesai' => 'SELESAI',
+                    'cancel' => 'CANCEL',
+                    'dikembalikan' => 'DIKEMBALIKAN'
                 ];
                 $status = $statusMap[strtolower(trim($dataRow['status']))] ?? null;
 
@@ -183,9 +192,9 @@ class ListOrders extends ListRecords
                     'kota' => $dataRow['kota'] ?? null,
                     'province' => $dataRow['province'] ?? null,
                     'product_package_id' => $pkg->id,
-                    'quantity' => (int)$dataRow['quantity'],
+                    'quantity' => (int) $dataRow['quantity'],
                     'price' => $pkg->price,
-                    'total_price' => $pkg->price * (int)$dataRow['quantity'],
+                    'total_price' => $pkg->price * (int) $dataRow['quantity'],
                     'status' => $status,
                     'payment' => $dataRow['payment'] ?? null,
                 ]);

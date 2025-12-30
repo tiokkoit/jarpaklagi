@@ -21,6 +21,9 @@ class ProductsTable
                 TextColumn::make('code')
                     ->label('Kode Produk') // ✅ Label lebih lengkap
                     ->searchable()
+                    ->badge()
+                    ->color('info')
+                    ->copyable()
                     ->sortable(),
                     
                 TextColumn::make('name')
@@ -86,10 +89,6 @@ class ProductsTable
             ->recordActions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->recordUrl(null);
     }
 }
