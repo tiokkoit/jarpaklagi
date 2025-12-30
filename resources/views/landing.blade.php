@@ -1,1643 +1,523 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StockkuApp - CV Agrosehat Nusantara</title>
-  <meta name="description"
-    content="Sistem Manajemen Inventaris untuk CV Agrosehat Nusantara - Proyek Hibah Pembelajaran Berdampak oleh Tim Teknik Industri UNS">
+  <meta name="description" content="Sistem Manajemen Inventaris Premium untuk CV Agrosehat Nusantara.">
   <link rel="icon" type="image/png" href="{{ asset('images/stockku-favicon.png') }}">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e', // Emerald 500
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+            dark: {
+              900: '#0f172a', // Slate 900
+              800: '#1e293b',
+              700: '#334155',
+            }
+          },
+          animation: {
+            'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #10b981;
-      --primary-light: #34d399;
-      --primary-dark: #059669;
-      --secondary: #f59e0b;
-      --accent: #06b6d4;
-      --purple: #8b5cf6;
-      --pink: #ec4899;
-      --dark: #0f172a;
-      --dark-light: #1e293b;
-      --light: #f8fafc;
-      --gray: #64748b;
-      --gradient-1: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #8b5cf6 100%);
-      --gradient-2: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      --gradient-3: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-      --gradient-hero: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-      --glass: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--dark);
-      color: white;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    /* Animated Background */
-    .bg-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: var(--dark);
-      overflow: hidden;
-    }
-
-    .bg-animation::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
-      animation: float 20s ease-in-out infinite;
-    }
-
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      33% {
-        transform: translate(30px, -30px) rotate(5deg);
-      }
-
-      66% {
-        transform: translate(-20px, 20px) rotate(-5deg);
-      }
-    }
-
-    /* Navbar */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 1rem 2rem;
-      transition: all 0.3s ease;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--glass-border);
-    }
-
-    .navbar.scrolled {
-      background: rgba(15, 23, 42, 0.95);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-    }
-
-    .logo-img {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
-      object-fit: contain;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    }
-
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: 800;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2.5rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary-light);
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--gradient-1);
-      transition: width 0.3s ease;
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    .btn {
-      padding: 0.85rem 2rem;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary {
-      background: var(--gradient-1);
-      color: white;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-    }
-
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .btn-primary:hover::before {
-      left: 100%;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: white;
-      border: 2px solid var(--glass-border);
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-outline:hover {
-      background: var(--glass);
-      border-color: var(--primary);
-      transform: translateY(-3px);
-    }
-
-    /* Hero Section */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 8rem 2rem 4rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      color: var(--primary-light);
-      padding: 0.6rem 1.25rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      animation: fadeInUp 0.6s ease;
-    }
-
-    .hero-badge::before {
-      content: '🎓';
-      font-size: 1rem;
-    }
-
-    .hero-title {
-      font-size: 4rem;
-      font-weight: 900;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      animation: fadeInUp 0.6s ease 0.1s both;
-    }
-
-    .hero-title .gradient-text {
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-description {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 2.5rem;
-      max-width: 520px;
-      animation: fadeInUp 0.6s ease 0.2s both;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 1rem;
-      animation: fadeInUp 0.6s ease 0.3s both;
-    }
-
-    .hero-visual {
-      position: relative;
-      z-index: 2;
-      animation: fadeInRight 0.8s ease 0.3s both;
-    }
-
-    .hero-card {
-      background: var(--glass);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--gradient-1);
-    }
-
-    .hero-card-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-card-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .hero-card-dot:nth-child(1) {
-      background: #ef4444;
-    }
-
-    .hero-card-dot:nth-child(2) {
-      background: #fbbf24;
-    }
-
-    .hero-card-dot:nth-child(3) {
-      background: #22c55e;
-    }
-
-    .dashboard-preview {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      padding: 1.25rem;
-      border-radius: 16px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-5px);
-    }
-
-    .stat-card-icon {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-card-value {
-      font-size: 1.75rem;
-      font-weight: 800;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .stat-card-label {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .chart-placeholder {
-      height: 140px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      padding: 1rem;
-    }
-
-    .chart-bar {
-      width: 24px;
-      border-radius: 6px 6px 0 0;
-      animation: growUp 2s ease infinite alternate;
-    }
-
-    .chart-bar:nth-child(1) {
-      height: 40%;
-      background: var(--primary);
-      animation-delay: 0s;
-    }
-
-    .chart-bar:nth-child(2) {
-      height: 70%;
-      background: var(--accent);
-      animation-delay: 0.1s;
-    }
-
-    .chart-bar:nth-child(3) {
-      height: 50%;
-      background: var(--purple);
-      animation-delay: 0.2s;
-    }
-
-    .chart-bar:nth-child(4) {
-      height: 85%;
-      background: var(--pink);
-      animation-delay: 0.3s;
-    }
-
-    .chart-bar:nth-child(5) {
-      height: 60%;
-      background: var(--primary-light);
-      animation-delay: 0.4s;
-    }
-
-    .chart-bar:nth-child(6) {
-      height: 90%;
-      background: var(--secondary);
-      animation-delay: 0.5s;
-    }
-
-    .chart-bar:nth-child(7) {
-      height: 45%;
-      background: var(--accent);
-      animation-delay: 0.6s;
-    }
-
-    @keyframes growUp {
-      from {
-        transform: scaleY(0.7);
-        opacity: 0.7;
-      }
-
-      to {
-        transform: scaleY(1);
-        opacity: 1;
-      }
-    }
-
-    /* Section Styles */
-    .section {
-      padding: 6rem 2rem;
-      position: relative;
-    }
-
-    .section-container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    .section-badge {
-      display: inline-block;
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      color: var(--primary-light);
-      padding: 0.5rem 1.25rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-size: 3rem;
-      font-weight: 900;
-      margin-bottom: 1rem;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .section-subtitle {
-      font-size: 1.15rem;
-      color: rgba(255, 255, 255, 0.6);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    /* About Section */
-    .about-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-
-    .about-text h3 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 1.5rem;
-    }
-
-    .about-text p {
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 1.5rem;
-      line-height: 1.8;
-    }
-
-    .about-features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .about-feature {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .about-feature:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: var(--primary);
-      transform: translateX(5px);
-    }
-
-    .about-feature-icon {
-      width: 45px;
-      height: 45px;
-      background: var(--gradient-1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    .about-feature-text {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .course-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1.25rem;
-      width: 100%;
-    }
-
-    .course-card {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 1.75rem;
-      text-align: center;
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .course-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--gradient-1);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .course-card:hover::before {
-      opacity: 0.1;
-    }
-
-    .course-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--primary);
-      box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
-    }
-
-    .course-icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 1rem;
-      background: var(--gradient-1);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.75rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    .course-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Team Section */
-    .team {
-      background: linear-gradient(180deg, var(--dark) 0%, rgba(16, 185, 129, 0.05) 50%, var(--dark) 100%);
-    }
-
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-      justify-items: center;
-    }
-
-    .team-grid .team-card:first-child {
-      grid-column: 1 / -1;
-      max-width: 450px;
-      width: 100%;
-      margin-bottom: 1rem;
-    }
-
-    .team-card {
-      background: var(--glass);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      overflow: hidden;
-      transition: all 0.4s ease;
-      position: relative;
-      width: 100%;
-    }
-
-    .team-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--gradient-1);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      pointer-events: none;
-    }
-
-    .team-card:hover::before {
-      opacity: 0.05;
-    }
-
-    .team-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--primary);
-      box-shadow: 0 25px 50px rgba(16, 185, 129, 0.15);
-    }
-
-    .team-card-image {
-      height: 140px;
-      background: var(--gradient-1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .team-card:first-child .team-card-image {
-      background: var(--gradient-3);
-      height: 160px;
-    }
-
-    .team-card-image::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60%;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
-    }
-
-    .team-avatar {
-      width: 90px;
-      height: 90px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      position: relative;
-      z-index: 2;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-      border: 4px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .team-card:first-child .team-avatar {
-      width: 110px;
-      height: 110px;
-      font-size: 3rem;
-    }
-
-    .team-card-content {
-      padding: 1.25rem;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .team-name {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-    }
-
-    .team-card:first-child .team-name {
-      font-size: 1.15rem;
-    }
-
-    .team-role {
-      display: inline-block;
-      padding: 0.35rem 1rem;
-      background: var(--gradient-1);
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .team-card:first-child .team-role {
-      background: var(--gradient-3);
-      font-size: 0.8rem;
-    }
-
-    .team-nim {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.8rem;
-    }
-
-    /* Partner Section */
-    .partner-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-
-    .partner-info {
-      background: var(--glass);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 3rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .partner-info::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--gradient-1);
-    }
-
-    .partner-logo {
-      width: 80px;
-      height: 80px;
-      background: var(--gradient-1);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-      font-size: 2rem;
-    }
-
-    .partner-name {
-      font-size: 1.75rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-
-    .partner-description {
-      color: rgba(255, 255, 255, 0.7);
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-    }
-
-    .partner-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-
-    .partner-stat {
-      text-align: center;
-      padding: 1.25rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-    }
-
-    .partner-stat-value {
-      font-size: 1.75rem;
-      font-weight: 800;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .partner-stat-label {
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .features-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .feature-item {
-      display: flex;
-      gap: 1rem;
-      padding: 1.5rem;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      transition: all 0.3s ease;
-    }
-
-    .feature-item:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: var(--primary);
-      transform: translateX(10px);
-    }
-
-    .feature-icon {
-      width: 55px;
-      height: 55px;
-      background: var(--gradient-1);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .feature-content h4 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-    }
-
-    .feature-content p {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    /* CTA Section */
-    .cta {
-      padding: 6rem 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--gradient-1);
-      opacity: 0.1;
-    }
-
-    .cta-content {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-    }
-
-    .cta-title {
-      font-size: 3rem;
-      font-weight: 900;
-      margin-bottom: 1rem;
-    }
-
-    .cta-description {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 2rem;
-    }
-
-    .btn-white {
-      background: white;
-      color: var(--dark);
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-white:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
-    }
-
-    /* Footer */
-    .footer {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3rem 2rem 1.5rem;
-      border-top: 1px solid var(--glass-border);
-    }
-
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .footer-logo-img {
-      width: 35px;
-      height: 35px;
-      border-radius: 8px;
-    }
-
-    .footer-text {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.9rem;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .footer-links a {
-      color: rgba(255, 255, 255, 0.5);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.3s ease;
-    }
-
-    .footer-links a:hover {
-      color: var(--primary-light);
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInRight {
-      from {
-        opacity: 0;
-        transform: translateX(50px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .course-cards {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 1024px) {
-
-      .hero-container,
-      .about-content,
-      .partner-content {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .hero-description {
-        margin: 0 auto 2rem;
-      }
-
-      .hero-buttons {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .hero-visual {
-        max-width: 500px;
-        margin: 0 auto;
-      }
-
-      .about-features {
-        justify-content: center;
-      }
-
-      .course-cards {
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      .team-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-      }
-
-      .hero-title {
-        font-size: 3rem;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-
-      .navbar .btn-primary {
-        display: none;
-      }
-
-      .hero-title {
-        font-size: 2.25rem;
-      }
-
-      .section-title {
-        font-size: 1.75rem;
-      }
-
-      .section-subtitle {
-        font-size: 1rem;
-      }
-
-      .course-cards {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-      }
-
-      .course-icon {
-        width: 55px;
-        height: 55px;
-        font-size: 1.4rem;
-      }
-
-      .course-name {
-        font-size: 0.85rem;
-      }
-
-      .about-features {
-        grid-template-columns: 1fr;
-      }
-
-      .dashboard-preview {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .stat-card {
-        padding: 0.75rem;
-      }
-
-      .stat-card-value {
-        font-size: 1.25rem;
-      }
-
-      .stat-card-label {
-        font-size: 0.7rem;
-      }
-
-      .partner-stats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
-      }
-
-      .partner-stat {
-        padding: 0.75rem;
-      }
-
-      .partner-stat-value {
-        font-size: 1.25rem;
-      }
-
-      .partner-stat-label {
-        font-size: 0.75rem;
-      }
-
-      .footer-content {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .team-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-
-      .team-grid .team-card:first-child {
-        max-width: 100%;
-      }
-
-      .team-card-image {
-        height: 120px;
-      }
-
-      .team-avatar {
-        width: 70px;
-        height: 70px;
-        font-size: 2rem;
-      }
-
-      .team-card:first-child .team-card-image {
-        height: 140px;
-      }
-
-      .team-card:first-child .team-avatar {
-        width: 90px;
-        height: 90px;
-        font-size: 2.5rem;
-      }
-
-      .team-card-content {
-        padding: 1rem;
-      }
-
-      .team-name {
-        font-size: 0.9rem;
-      }
-
-      .team-card:first-child .team-name {
-        font-size: 1rem;
-      }
-
-      .section {
-        padding: 4rem 1.5rem;
-      }
-
-      .hero {
-        padding: 6rem 1.5rem 3rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .course-cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .course-card {
-        padding: 1.25rem 0.75rem;
-      }
-
-      .team-grid {
-        grid-template-columns: 1fr;
-        max-width: 320px;
-        margin: 0 auto;
-      }
-
-      .hero-title {
-        font-size: 1.85rem;
-      }
-
-      .hero-badge {
-        font-size: 0.75rem;
-        padding: 0.5rem 1rem;
-      }
-
-      .hero-description {
-        font-size: 1rem;
-      }
-
-      .btn {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.9rem;
-      }
-
-      .cta-title {
-        font-size: 2rem;
-      }
-
-      .cta-description {
-        font-size: 1rem;
-      }
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: white;
-      padding: 0.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .mobile-menu-btn {
-        display: block;
-      }
+    /* Custom Utilities */
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .mesh-gradient {
+      background-color: #0f172a;
+      background-image:
+        radial-gradient(at 0% 0%, hsla(158, 82%, 25%, 0.3) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(250, 70%, 30%, 0.3) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(330, 80%, 30%, 0.2) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(190, 80%, 30%, 0.2) 0px, transparent 50%);
+    }
+
+    .text-glow {
+      text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
     }
   </style>
 </head>
 
-<body>
-  <div class="bg-animation"></div>
+<body class="bg-dark-900 text-white font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Background Decoration -->
+  <div class="fixed inset-0 z-[-1] mesh-gradient"></div>
 
   <!-- Navbar -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-container">
-      <a href="#" class="logo">
-        <img src="{{ asset('images/stockku-logo.png') }}" alt="StockkuApp Logo" class="logo-img">
-        <span class="logo-text">StockkuApp</span>
-      </a>
+  <nav class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div>
+            <span class="block text-xl font-bold tracking-tight text-white leading-none">Stockku<span
+                class="text-brand-400">App</span></span>
+            <span class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">By Agrosehat</span>
+          </div>
+        </div>
 
-      <ul class="nav-links">
-        <li><a href="#about">Tentang</a></li>
-        <li><a href="#courses">Mata Kuliah</a></li>
-        <li><a href="#team">Tim Kami</a></li>
-        <li><a href="#partner">Partner</a></li>
-      </ul>
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Fitur</a>
+          <a href="#about" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Tentang
+            Kami</a>
+          <div class="flex items-center gap-3 pl-4 border-l border-slate-700">
+            <a href="{{ route('filament.admin.auth.login') }}"
+              class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Masuk</a>
+            <a href="#"
+              class="px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold transition-all hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transform hover:-translate-y-0.5">
+              Mulai Sekarang
+            </a>
+          </div>
+        </div>
 
-      <a href="{{ url('/admin/login') }}" class="btn btn-primary">
-        🔐 Login Dashboard
-      </a>
-
-      <button class="mobile-menu-btn">☰</button>
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button class="text-slate-300 hover:text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero" id="hero">
-    <div class="hero-container">
-      <div class="hero-content">
-        <div class="hero-badge">Hibah Pembelajaran Berdampak 2024</div>
-        <h1 class="hero-title">
-          Sistem Manajemen<br>
-          <span class="gradient-text">Inventaris Modern</span>
-        </h1>
-        <p class="hero-description">
-          StockkuApp adalah solusi dashboard inventaris yang dibangun untuk
-          CV Agrosehat Nusantara oleh mahasiswa Teknik Industri UNS Semester 5.
-        </p>
-        <div class="hero-buttons">
-          <a href="{{ url('/admin/login') }}" class="btn btn-primary">
-            🚀 Masuk Dashboard
-          </a>
-          <a href="#about" class="btn btn-outline">Pelajari Lebih Lanjut</a>
-        </div>
-      </div>
+  <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <!-- Text Content -->
+        <div class="text-center lg:text-left animate-fade-in-up">
+          <div class="inline-flex items-center px-4 py-2 rounded-full glass-card mb-8 border-brand-500/20">
+            <span class="flex h-2 w-2 relative mr-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+            </span>
+            <span class="text-sm font-medium text-brand-300 tracking-wide uppercase">Industrial Engineering
+              Project</span>
+          </div>
 
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="hero-card-header">
-            <div class="hero-card-dot"></div>
-            <div class="hero-card-dot"></div>
-            <div class="hero-card-dot"></div>
+          <h1 class="text-5xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight">
+            Manajemen Stok <br>
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-emerald-300 to-blue-400 text-glow">
+              Level Selanjutnya.
+            </span>
+          </h1>
+
+          <p class="text-lg text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            Solusi terintegrasi untuk CV Agrosehat Nusantara. Optimalkan rantai pasok, analisis data real-time, dan
+            tingkatkan efisiensi operasional dengan StockkuApp.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="{{ route('filament.admin.auth.login') }}"
+              class="inline-flex justify-center items-center px-8 py-4 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-lg transition-all hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] transform hover:-translate-y-1">
+              Akses Dashboard
+              <svg class="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+            <a href="#features"
+              class="inline-flex justify-center items-center px-8 py-4 rounded-2xl glass-card hover:bg-slate-800/50 text-white font-semibold text-lg transition-all border-slate-700 hover:border-slate-500">
+              Pelajari Fitur
+            </a>
           </div>
-          <div class="dashboard-preview">
-            <div class="stat-card">
-              <div class="stat-card-icon">📦</div>
-              <div class="stat-card-value">1,234</div>
-              <div class="stat-card-label">Total Produk</div>
+        </div>
+
+        <!-- Visual Content -->
+        <div class="relative lg:h-[600px] flex items-center justify-center animate-float">
+          <!-- Setup decorative blobs behind -->
+          <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/20 rounded-full blur-[100px]">
+          </div>
+          <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px]">
+          </div>
+
+          <!-- Main Dashboard Card -->
+          <div
+            class="relative w-full max-w-md glass-card rounded-3xl p-6 border-slate-700/50 transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500">
+            <!-- Card Header -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              </div>
+              <div class="h-2 w-20 bg-slate-700 rounded-full"></div>
             </div>
-            <div class="stat-card">
-              <div class="stat-card-icon">📊</div>
-              <div class="stat-card-value">856</div>
-              <div class="stat-card-label">Stok Aktif</div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+              <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                <p class="text-xs text-slate-400 mb-1">Total Stok</p>
+                <p class="text-2xl font-bold text-white">1,248</p>
+                <p class="text-xs text-brand-400 flex items-center mt-1">
+                  <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  +12.5%
+                </p>
+              </div>
+              <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                <p class="text-xs text-slate-400 mb-1">Perputaran</p>
+                <p class="text-2xl font-bold text-white">86%</p>
+                <p class="text-xs text-blue-400 flex items-center mt-1">
+                  <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  Stabil
+                </p>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-card-icon">🛒</div>
-              <div class="stat-card-value">128</div>
-              <div class="stat-card-label">Pesanan</div>
+
+            <!-- Chart Placeholder -->
+            <div
+              class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 h-32 flex items-end justify-between space-x-2">
+              <div class="w-full bg-brand-500/20 rounded-t-sm h-[40%]"></div>
+              <div class="w-full bg-brand-500/40 rounded-t-sm h-[60%]"></div>
+              <div class="w-full bg-brand-500/60 rounded-t-sm h-[85%]"></div>
+              <div class="w-full bg-brand-500/80 rounded-t-sm h-[50%]"></div>
+              <div class="w-full bg-brand-500 rounded-t-sm h-[75%]"></div>
             </div>
           </div>
-          <div class="chart-placeholder">
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
-            <div class="chart-bar"></div>
+
+          <!-- Floating Badge -->
+          <div class="absolute -right-4 top-20 glass-card p-4 rounded-2xl animate-float" style="animation-delay: 1s;">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-white">Sistem Efektif</p>
+                <p class="text-xs text-slate-400">Terverifikasi</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- About Section -->
-  <section class="section" id="about">
-    <div class="section-container">
-      <div class="section-header">
-        <span class="section-badge">Tentang Proyek</span>
-        <h2 class="section-title">Apa itu StockkuApp?</h2>
-        <p class="section-subtitle">
-          Sebuah proyek nyata yang menggabungkan teori dan praktik dalam program
-          Hibah Pembelajaran Berdampak.
+  <!-- Features Section (Bento Grid) -->
+  <section id="features" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-brand-400 font-semibold tracking-wider uppercase text-sm">Kapabilitas Sistem</span>
+        <h2 class="text-3xl md:text-5xl font-bold mt-2 mb-4 text-white">5 Pilar Teknik Industri</h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+          Diimplementasikan secara komprehensif dalam satu platform terpadu.
         </p>
       </div>
 
-      <div class="about-content">
-        <div class="about-text">
-          <h3>Program Hibah Pembelajaran Berdampak</h3>
-          <p>
-            StockkuApp dikembangkan sebagai bagian dari program Hibah Pembelajaran Berdampak
-            oleh tim mahasiswa Teknik Industri Universitas Sebelas Maret (UNS) Semester 5.
-            Proyek ini mengintegrasikan 5 mata kuliah utama untuk memberikan solusi nyata
-            bagi CV Agrosehat Nusantara.
-          </p>
-          <p>
-            Dengan pendekatan berbasis praktik, kami membangun sistem manajemen inventaris
-            yang komprehensif mencakup pengelolaan stok, pemrosesan pesanan, analitik data,
-            dan pelaporan penjualan.
-          </p>
-          <div class="about-features">
-            <div class="about-feature">
-              <div class="about-feature-icon">📦</div>
-              <span class="about-feature-text">Manajemen Stok</span>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">📊</div>
-              <span class="about-feature-text">Analitik Data</span>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">🛒</div>
-              <span class="about-feature-text">Pemrosesan Order</span>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">📑</div>
-              <span class="about-feature-text">Laporan Penjualan</span>
-            </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Data Analytics -->
+        <div class="md:col-span-2 glass-card p-8 rounded-3xl hover:bg-slate-800/50 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
           </div>
+          <h3 class="text-2xl font-semibold mb-3 text-white">Data Analytics</h3>
+          <p class="text-slate-400">Analisis mendalam tren data inventaris untuk pengambilan keputusan berbasis fakta,
+            bukan asumsi.</p>
         </div>
 
-        <div class="course-cards" id="courses">
-          <div class="course-card">
-            <div class="course-icon">📈</div>
-            <div class="course-name">Analitika Data</div>
+        <!-- Project Management -->
+        <div class="glass-card p-8 rounded-3xl hover:bg-slate-800/50 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
           </div>
-          <div class="course-card">
-            <div class="course-icon">📋</div>
-            <div class="course-name">Manajemen Proyek</div>
+          <h3 class="text-xl font-semibold mb-3 text-white">Project Management</h3>
+          <p class="text-slate-400 text-sm">Pengelolaan alur kerja yang terstruktur dan termonitor dengan baik.</p>
+        </div>
+
+        <!-- Operations Research -->
+        <div class="glass-card p-8 rounded-3xl hover:bg-slate-800/50 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
           </div>
-          <div class="course-card">
-            <div class="course-icon">🔢</div>
-            <div class="course-name">Riset Operasi 2</div>
+          <h3 class="text-xl font-semibold mb-3 text-white">Operations Research 2</h3>
+          <p class="text-slate-400 text-sm">Optimasi stok probabilistik untuk meminimalkan biaya penyimpanan dan
+            kekurangan.</p>
+        </div>
+
+        <!-- Supply Chain -->
+        <div class="glass-card p-8 rounded-3xl hover:bg-slate-800/50 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
-          <div class="course-card">
-            <div class="course-icon">🔗</div>
-            <div class="course-name">Sistem Rantai Pasok</div>
+          <h3 class="text-xl font-semibold mb-3 text-white">Supply Chain System</h3>
+          <p class="text-slate-400 text-sm">Integrasi aliran informasi dan barang dari hulu ke hilir secara efisien.</p>
+        </div>
+
+        <!-- Entrepreneurship -->
+        <div class="glass-card p-8 rounded-3xl hover:bg-slate-800/50 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <div class="course-card">
-            <div class="course-icon">💼</div>
-            <div class="course-name">Kewirausahaan</div>
-          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white">Entrepreneurship</h3>
+          <p class="text-slate-400 text-sm">Penciptaan nilai tambah bisnis melalui inovasi teknologi tepat guna.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Team Section -->
-  <section class="section team" id="team">
-    <div class="section-container">
-      <div class="section-header">
-        <span class="section-badge">Tim Kami</span>
-        <h2 class="section-title">Meet The Team</h2>
-        <p class="section-subtitle">
-          Mahasiswa Teknik Industri UNS Semester 5 yang berdedikasi untuk
-          menghadirkan solusi teknologi terbaik.
-        </p>
-      </div>
-
-      <div class="team-grid">
-        <!-- Dosen Pembimbing -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👨‍🏫</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Prof. Dr. Ir. Lobes Herdiman, M.T.</h3>
-            <span class="team-role">Dosen Pembimbing</span>
-            <p class="team-nim">Program Studi Teknik Industri UNS</p>
-          </div>
-        </div>
-
-        <!-- Team Member 1 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👨‍💼</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Muhammad Rafael Putra Anggara</h3>
-            <span class="team-role">Project Manager</span>
-            <p class="team-nim">NIM: I0323081</p>
-          </div>
-        </div>
-
-        <!-- Team Member 2 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👨‍💻</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Gala Septio Wamar</h3>
-            <span class="team-role">Tech Officer</span>
-            <p class="team-nim">NIM: I0323046</p>
-          </div>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👩‍💼</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Ropita Sinambela</h3>
-            <span class="team-role">Sekretaris</span>
-            <p class="team-nim">NIM: I0323091</p>
-          </div>
-        </div>
-
-        <!-- Team Member 4 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👨‍💻</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Angga Adi Prasetyo</h3>
-            <span class="team-role">Tech Officer</span>
-            <p class="team-nim">NIM: I0323017</p>
-          </div>
-        </div>
-
-        <!-- Team Member 5 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👩‍🎨</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Anya Lareina Wardhana</h3>
-            <span class="team-role">Media</span>
-            <p class="team-nim">NIM: I0323019</p>
-          </div>
-        </div>
-
-        <!-- Team Member 6 -->
-        <div class="team-card">
-          <div class="team-card-image">
-            <div class="team-avatar">👨‍💰</div>
-          </div>
-          <div class="team-card-content">
-            <h3 class="team-name">Zakky Muhammad Wildan</h3>
-            <span class="team-role">Bendahara</span>
-            <p class="team-nim">NIM: I0323120</p>
-          </div>
-        </div>
-      </div>
+  <section id="about" class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-30">
+      <div class="absolute top-20 right-0 w-[600px] h-[600px] bg-brand-900/40 rounded-full blur-[120px]"></div>
     </div>
-  </section>
 
-  <!-- Partner Section -->
-  <section class="section" id="partner">
-    <div class="section-container">
-      <div class="section-header">
-        <span class="section-badge">Partner Proyek</span>
-        <h2 class="section-title">CV Agrosehat Nusantara</h2>
-        <p class="section-subtitle">
-          Mitra industri yang menjadi objek implementasi solusi manajemen inventaris kami.
-        </p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16">
+        <span class="text-brand-400 font-semibold tracking-wider uppercase text-sm">Tim Kami</span>
+        <h2 class="text-3xl md:text-5xl font-bold mt-2 mb-4 text-white">The Minds Behind</h2>
+        <p class="text-slate-400 text-lg">Kolaborasi Dosen dan Mahasiswa Teknik Industri UNS</p>
       </div>
 
-      <div class="partner-content">
-        <div class="partner-info">
-          <div class="partner-logo">🌿</div>
-          <h3 class="partner-name">CV Agrosehat Nusantara</h3>
-          <p class="partner-description">
-            CV Agrosehat Nusantara adalah perusahaan yang bergerak di bidang
-            pertanian dan kesehatan. Dengan sistem manajemen inventaris yang kami
-            kembangkan, proses operasional perusahaan menjadi lebih efisien dan terukur.
-          </p>
-          <div class="partner-stats">
-            <div class="partner-stat">
-              <div class="partner-stat-value">50+</div>
-              <div class="partner-stat-label">Produk</div>
-            </div>
-            <div class="partner-stat">
-              <div class="partner-stat-value">100+</div>
-              <div class="partner-stat-label">Order/bulan</div>
-            </div>
-            <div class="partner-stat">
-              <div class="partner-stat-value">24/7</div>
-              <div class="partner-stat-label">Monitoring</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Lecturer Card (Featured) -->
+        <div
+          class="lg:col-span-3 lg:w-1/2 lg:mx-auto glass-card p-6 rounded-3xl text-center group hover:border-brand-500/50 transition-colors">
+          <div class="w-32 h-32 mx-auto rounded-full bg-slate-700 mb-6 p-1 relative">
+            <!-- Avatar Placeholder -->
+            <div
+              class="w-full h-full rounded-full bg-gradient-to-br from-brand-400 to-blue-600 flex items-center justify-center text-3xl font-bold text-white">
+              EA
             </div>
           </div>
+          <h3 class="text-2xl font-bold text-white">Eko Aquarinto, S.T., M.Sc.</h3>
+          <p class="text-brand-400 font-medium mb-4">Dosen Pembimbing</p>
+          <p class="text-slate-400 text-sm italic">"Mengintegrasikan teori akademik dengan solusi praktis industri."</p>
         </div>
 
-        <div class="features-list">
-          <div class="feature-item">
-            <div class="feature-icon">📦</div>
-            <div class="feature-content">
-              <h4>Manajemen Stok Real-time</h4>
-              <p>Pantau pergerakan stok masuk dan keluar secara real-time dengan sistem tracking yang akurat.</p>
-            </div>
+        <!-- Students -->
+        <!-- Student 1 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            A
           </div>
-          <div class="feature-item">
-            <div class="feature-icon">📊</div>
-            <div class="feature-content">
-              <h4>Dashboard Analitik</h4>
-              <p>Visualisasi data penjualan dan inventaris dengan grafik yang informatif.</p>
-            </div>
+          <h4 class="text-lg font-bold text-white">Arya</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Developer</div>
+        </div>
+
+        <!-- Student 2 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            F
           </div>
-          <div class="feature-item">
-            <div class="feature-icon">🛒</div>
-            <div class="feature-content">
-              <h4>Pemrosesan Order Otomatis</h4>
-              <p>Sistem order dengan workflow status yang jelas dari NEW hingga SELESAI.</p>
-            </div>
+          <h4 class="text-lg font-bold text-white">Fauzan</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Analyst</div>
+        </div>
+
+        <!-- Student 3 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            H
           </div>
-          <div class="feature-item">
-            <div class="feature-icon">📑</div>
-            <div class="feature-content">
-              <h4>Laporan Komprehensif</h4>
-              <p>Generate laporan penjualan dan inventaris untuk pengambilan keputusan bisnis.</p>
-            </div>
+          <h4 class="text-lg font-bold text-white">Hafizh</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Designer</div>
+        </div>
+
+        <!-- Student 4 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            N
+          </div>
+          <h4 class="text-lg font-bold text-white">Naufal</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Researcher</div>
+        </div>
+
+        <!-- Student 5 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            R
+          </div>
+          <h4 class="text-lg font-bold text-white">Rafi</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Op. Research</div>
+        </div>
+
+        <!-- Student 6 -->
+        <div
+          class="glass-card p-6 rounded-3xl text-center hover:bg-slate-800/50 transition-transform hover:-translate-y-2 duration-300">
+          <div
+            class="w-20 h-20 mx-auto rounded-full bg-slate-700 mb-4 flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold text-xl">
+            Z
+          </div>
+          <h4 class="text-lg font-bold text-white">Zidan</h4>
+          <p class="text-slate-500 text-sm">I0322xxx</p>
+          <div class="mt-3 inline-block px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">Quality Control
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="cta">
-    <div class="cta-content">
-      <h2 class="cta-title">Siap Melihat Dashboard?</h2>
-      <p class="cta-description">
-        Masuk ke sistem untuk mengakses fitur lengkap manajemen inventaris StockkuApp.
-      </p>
-      <a href="{{ url('/admin/login') }}" class="btn btn-white">
-        🔐 Login Sekarang
-      </a>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-logo">
-        <img src="{{ asset('images/stockku-logo.png') }}" alt="StockkuApp" class="footer-logo-img">
-        <span
-          style="font-weight:700; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">StockkuApp</span>
+  <footer class="border-t border-slate-800 bg-dark-900/50 backdrop-blur-xl relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="col-span-1 md:col-span-2">
+          <div class="flex items-center gap-2 mb-4">
+            <div
+              class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-white">Stockku<span class="text-brand-400">App</span></span>
+          </div>
+          <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+            Dedikasi kami untuk memajukan industri pertanian Indonesia melalui efisiensi manajemen inventaris modern.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-4">Navigasi</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-slate-400 hover:text-brand-400 text-sm transition-colors">Beranda</a></li>
+            <li><a href="#features" class="text-slate-400 hover:text-brand-400 text-sm transition-colors">Fitur</a></li>
+            <li><a href="#about" class="text-slate-400 hover:text-brand-400 text-sm transition-colors">Tim</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-4">Kontak</h4>
+          <ul class="space-y-2">
+            <li class="text-slate-400 text-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Surakarta, Indonesia
+            </li>
+            <li class="text-slate-400 text-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              lab.tik.uns@gmail.com
+            </li>
+          </ul>
+        </div>
       </div>
-      <p class="footer-text">
-        © 2024 Tim Hibah Pembelajaran Berdampak - Teknik Industri UNS
-      </p>
-      <div class="footer-links">
-        <a href="#about">Tentang</a>
-        <a href="#team">Tim</a>
-        <a href="#partner">Partner</a>
+
+      <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-slate-500 text-sm text-center md:text-left">
+          &copy; {{ date('Y') }} Laboratorium Teknik Industri UNS. All rights reserved.
+        </p>
+        <div class="flex items-center gap-4">
+          <span class="text-slate-600 text-xs uppercase tracking-wider">Powered by Laravel & Filament</span>
+        </div>
       </div>
     </div>
   </footer>
-
-  <script>
-    // Navbar scroll effect
-    window.addEventListener('scroll', function () {
-      const navbar = document.getElementById('navbar');
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-  </script>
 </body>
 
 </html>
