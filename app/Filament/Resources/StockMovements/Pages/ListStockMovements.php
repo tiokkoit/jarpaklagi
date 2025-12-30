@@ -16,9 +16,9 @@ class ListStockMovements extends ListRecords
 {
     return [
         \Filament\Actions\CreateAction::make()
-            ->label('Add Stock Movement')
+            ->label('Tambah Stock Movement')
             ->icon('heroicon-o-plus-circle')
-            ->color('success'),
+            ->color('primary'),
     ];
 }
 

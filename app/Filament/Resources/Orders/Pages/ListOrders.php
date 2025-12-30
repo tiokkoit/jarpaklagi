@@ -41,7 +41,7 @@ class ListOrders extends ListRecords
             Action::make('create')
                 ->label('Tambah Order')
                 ->url(OrderResource::getUrl('create'))
-                ->icon('heroicon-o-plus')
+                ->icon('heroicon-o-plus-circle')
                 ->color('primary'),
         ];
     }
