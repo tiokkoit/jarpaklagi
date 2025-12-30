@@ -12,7 +12,10 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SalesReports\SalesReportResource;
-use Filament\Forms\Components\FileUpload; // Namespace yang benar untuk Filament v3/v4
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\DatePicker;
 
 class ListSalesReports extends ListRecords
 {
@@ -25,10 +28,122 @@ class ListSalesReports extends ListRecords
                 ->label('Export PDF')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
-                ->url(fn() => route('exports.sales-report.pdf', [
-                    'status' => $this->activeTab ?? 'all',
-                ]))
-                ->openUrlInNewTab(),
+                ->form([
+                    Select::make('period_filter')
+                        ->label('Periode')
+                        ->options([
+                            'today' => 'Hari Ini',
+                            'this_week' => 'Minggu Ini',
+                            'this_month' => 'Bulan Ini',
+                            'this_year' => 'Tahun Ini',
+                            'month' => 'Pilih Bulan/Tahun',
+                            'year' => 'Pilih Tahun',
+                            'range' => 'Rentang Tanggal',
+                        ])
+                        ->default('today')
+                        ->reactive(),
+
+                    Grid::make(2)
+                        ->schema([
+                            Select::make('month_number')
+                                ->label('Bulan')
+                                ->options([
+                                    1 => 'Januari',
+                                    2 => 'Februari',
+                                    3 => 'Maret',
+                                    4 => 'April',
+                                    5 => 'Mei',
+                                    6 => 'Juni',
+                                    7 => 'Juli',
+                                    8 => 'Agustus',
+                                    9 => 'September',
+                                    10 => 'Oktober',
+                                    11 => 'November',
+                                    12 => 'Desember'
+                                ])
+                                ->visible(fn($get) => $get('period_filter') === 'month')
+                                ->default(now()->month)
+                                ->required(),
+
+                            Select::make('month_year')
+                                ->label('Tahun')
+                                ->options(array_combine(range(date('Y') - 5, date('Y')), range(date('Y') - 5, date('Y'))))
+                                ->visible(fn($get) => $get('period_filter') === 'month')
+                                ->default(now()->year)
+                                ->required(),
+                        ]),
+
+                    Select::make('year_only')
+                        ->label('Pilih Tahun')
+                        ->options(array_combine(range(date('Y') - 5, date('Y')), range(date('Y') - 5, date('Y'))))
+                        ->visible(fn($get) => $get('period_filter') === 'year')
+                        ->default(now()->year)
+                        ->required(),
+
+                    Grid::make(2)
+                        ->schema([
+                            DatePicker::make('start_date')
+                                ->label('Dari Tanggal')
+                                ->visible(fn($get) => $get('period_filter') === 'range')
+                                ->required(),
+                            DatePicker::make('end_date')
+                                ->label('Sampai Tanggal')
+                                ->visible(fn($get) => $get('period_filter') === 'range')
+                                ->required(),
+                        ]),
+
+                    Select::make('status')
+                        ->label('Status')
+                        ->options([
+                            'all' => 'Semua Status',
+                            'CANCEL' => 'Cancel',
+                            'DIKEMBALIKAN' => 'Dikembalikan',
+                            'SELESAI' => 'Selesai',
+                        ])
+                        ->default('all'),
+                ])
+                ->action(function (array $data) {
+                    $period = $data['period_filter'];
+                    $start = null;
+                    $end = null;
+
+                    switch ($period) {
+                        case 'today':
+                            $start = Carbon::today();
+                            $end = Carbon::today();
+                            break;
+                        case 'this_week':
+                            $start = Carbon::now()->startOfWeek();
+                            $end = Carbon::now()->endOfWeek();
+                            break;
+                        case 'this_month':
+                            $start = Carbon::now()->startOfMonth();
+                            $end = Carbon::now()->endOfMonth();
+                            break;
+                        case 'this_year':
+                            $start = Carbon::now()->startOfYear();
+                            $end = Carbon::now()->endOfYear();
+                            break;
+                        case 'month':
+                            $start = Carbon::create($data['month_year'], $data['month_number'], 1)->startOfMonth();
+                            $end = Carbon::create($data['month_year'], $data['month_number'], 1)->endOfMonth();
+                            break;
+                        case 'year':
+                            $start = Carbon::create($data['year_only'], 1, 1)->startOfYear();
+                            $end = Carbon::create($data['year_only'], 1, 1)->endOfYear();
+                            break;
+                        case 'range':
+                            $start = Carbon::parse($data['start_date']);
+                            $end = Carbon::parse($data['end_date']);
+                            break;
+                    }
+
+                    return redirect()->route('exports.sales-report.pdf', [
+                        'status' => $data['status'],
+                        'start_date' => $start?->format('Y-m-d'),
+                        'end_date' => $end?->format('Y-m-d'),
+                    ]);
+                }),
 
             Action::make('import_csv')
                 ->label('Import CSV')
