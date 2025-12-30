@@ -36,7 +36,7 @@ class UserResource extends Resource
 
   public static function getNavigationIcon(): string|\BackedEnum|null
   {
-    return 'heroicon-o-users';
+    return 'heroicon-o-user-group';
   }
 
   public static function getNavigationLabel(): string

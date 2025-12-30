@@ -17,7 +17,7 @@ use BackedEnum;
 class StockMovementResource extends Resource
 {
     protected static ?string $model = StockMovement::class;
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
     protected static ?string $navigationLabel = 'Stock Movements';
     protected static ?int $navigationSort = 3;
 
