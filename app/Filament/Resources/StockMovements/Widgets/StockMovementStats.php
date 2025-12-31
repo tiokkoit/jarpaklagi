@@ -5,42 +5,43 @@ namespace App\Filament\Resources\StockMovements\Widgets;
 use App\Models\StockMovement;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Carbon\Carbon;
 
 class StockMovementStats extends BaseWidget
 {
   protected function getStats(): array
   {
-    $movementsInToday = StockMovement::where('type', 'in')
-      ->whereDate('created_at', today())
-      ->sum('quantity');
+    $today = Carbon::today();
 
-    $movementsOutToday = StockMovement::where('type', 'out')
-      ->whereDate('created_at', today())
-      ->sum('quantity');
+    $inToday = StockMovement::where('type', 'in')->whereDate('created_at', $today)->sum('quantity');
+    $outToday = StockMovement::where('type', 'out')->whereDate('created_at', $today)->sum('quantity');
 
-    $mostActiveProduct = StockMovement::select('product_id')
-      ->selectRaw('count(*) as count')
+    // Product with most movement today
+    $mostActive = StockMovement::whereDate('created_at', $today)
+      ->selectRaw('product_id, count(*) as count')
       ->groupBy('product_id')
       ->orderByDesc('count')
       ->with('product')
       ->first();
 
-    $activeProductName = $mostActiveProduct?->product->name ?? '-';
+    $activeProductName = $mostActive ? $mostActive->product->name : '-';
 
     return [
-      Stat::make('Stok Masuk Hari Ini', number_format($movementsInToday))
-        ->description('Total barang restock / return')
-        ->descriptionIcon('heroicon-m-arrow-down-tray')
-        ->color('success'),
+      Stat::make('Barang Masuk (Hari Ini)', '+' . $inToday)
+        ->description('Stok masuk gudang hari ini')
+        ->descriptionIcon('heroicon-s-arrow-down-on-square-stack')
+        ->color('success')
+        ->chart([2, 10, 5, 20, $inToday]),
 
-      Stat::make('Stok Keluar Hari Ini', number_format($movementsOutToday))
-        ->description('Total barang terjual / keluar')
-        ->descriptionIcon('heroicon-m-arrow-up-tray')
-        ->color('danger'),
+      Stat::make('Barang Keluar (Hari Ini)', '-' . $outToday)
+        ->description('Stok keluar gudang hari ini')
+        ->descriptionIcon('heroicon-s-arrow-up-on-square-stack')
+        ->color('danger')
+        ->chart([5, 8, 12, 15, $outToday]),
 
-      Stat::make('Produk Ter-Aktif', $activeProductName)
-        ->description('Paling sering bergerak')
-        ->descriptionIcon('heroicon-m-fire')
+      Stat::make('Produk Teraktif', $activeProductName)
+        ->description('Produk paling top hari ini')
+        ->descriptionIcon('heroicon-s-fire')
         ->color('warning'),
     ];
   }

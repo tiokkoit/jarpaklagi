@@ -9,24 +9,21 @@ use Carbon\Carbon;
 class SalesRevenueChart extends ApexChartWidget
 {
   protected static ?string $chartId = 'salesRevenueChart';
-  protected static ?string $heading = 'Trend Pendapatan (90 Hari)';
+  protected static ?string $heading = 'Tren Pendapatan (90 Hari Terakhir)';
   protected static ?int $sort = 1;
 
   protected function getOptions(): array
   {
-    // 1. Fetch Real Data
-    $reports = SalesReport::select('report_date', 'total_price')
-      ->where('status', 'SELESAI') // Restore 'SELESAI' filter
+    $reports = SalesReport::select('report_date', 'total_price', 'status')
+      ->where('status', 'SELESAI')
       ->where('report_date', '>=', now()->subDays(90))
       ->orderBy('report_date')
       ->get();
 
-    // 2. Group
     $grouped = $reports->groupBy(function ($item) {
       return Carbon::parse($item->report_date)->format('Y-m-d');
     });
 
-    // 3. Fill Gaps
     $categories = [];
     $data = [];
     $days = 90;
@@ -54,8 +51,12 @@ class SalesRevenueChart extends ApexChartWidget
       ],
       'xaxis' => [
         'categories' => $categories,
-        'labels' => ['style' => ['colors' => '#9ca3af']],
+        'labels' => [
+          'style' => ['colors' => '#9ca3af', 'fontSize' => '10px'],
+        ],
         'tickAmount' => 10,
+        'axisBorder' => ['show' => false],
+        'axisTicks' => ['show' => false],
       ],
       'yaxis' => [
         'labels' => [
@@ -63,17 +64,22 @@ class SalesRevenueChart extends ApexChartWidget
         ],
       ],
       'colors' => ['#10b981'],
-      // Removed JS formatter
-      'dataLabels' => ['enabled' => false],
-      'stroke' => ['curve' => 'smooth', 'width' => 2],
       'fill' => [
         'type' => 'gradient',
         'gradient' => [
           'shadeIntensity' => 1,
           'opacityFrom' => 0.5,
-          'opacityTo' => 0.05,
+          'opacityTo' => 0.1, // Lighter bottom
           'stops' => [0, 90, 100]
         ]
+      ],
+      'stroke' => ['curve' => 'smooth', 'width' => 2],
+      // DISABLED JS FORMATTERS TO FIX BLANK SCREEN
+      'dataLabels' => ['enabled' => false],
+      'grid' => [
+        'show' => true,
+        'borderColor' => '#f3f4f6',
+        'strokeDashArray' => 4,
       ],
     ];
   }

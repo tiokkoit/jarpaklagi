@@ -7,36 +7,18 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class OrderStatusChart extends ApexChartWidget
 {
-  /**
-   * Chart Id
-   *
-   * @var string
-   */
   protected static ?string $chartId = 'orderStatusChart';
-
-  /**
-   * Widget Title
-   *
-   * @var string|null
-   */
-  protected static ?string $heading = 'Distribusi Status Pesanan';
+  protected static ?string $heading = 'Distribusi Status Pesanan'; // Keep simple
 
   protected static ?int $sort = 2;
 
-  /**
-   * Chart options (series, labels, types, size, animations...)
-   * https://apexcharts.com/docs/options
-   *
-   * @return array
-   */
   protected function getOptions(): array
   {
     $statusCounts = Order::selectRaw('status, count(*) as count')
       ->groupBy('status')
-      ->pluck('count', 'status') // [NEW => 5, DIKIRIM => 2]
+      ->pluck('count', 'status')
       ->toArray();
 
-    // Ensure keys exist even if count is 0 for correct color mapping
     $allStatuses = [
       Order::STATUS_NEW,
       Order::STATUS_DIKIRIM,
@@ -50,37 +32,53 @@ class OrderStatusChart extends ApexChartWidget
 
     foreach ($allStatuses as $status) {
       $data[] = $statusCounts[$status] ?? 0;
-      $labels[] = $status;
+      $labels[] = ucfirst($status);
     }
 
     return [
       'chart' => [
         'type' => 'donut',
         'height' => 300,
+        'fontFamily' => 'inherit',
+        'toolbar' => ['show' => false],
       ],
       'series' => $data,
       'labels' => $labels,
       'legend' => [
+        'position' => 'bottom',
+        'fontFamily' => 'inherit',
         'labels' => [
-          'colors' => '#9ca3af',
-          'fontWeight' => 600,
+          'colors' => '#6b7280',
         ],
       ],
-      'colors' => ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#6b7280'], // Matching typical status colors
+      // New (Amber-500), Dikirim (Sky-500), Selesai (Emerald-500), Cancel (Rose-500), Dikembalikan (Slate-500)
+      'colors' => ['#f59e0b', '#0ea5e9', '#10b981', '#f43f5e', '#64748b'],
+      'stroke' => ['width' => 0], // Cleaner look
       'plotOptions' => [
         'pie' => [
           'donut' => [
-            'size' => '60%',
+            'size' => '65%',
             'labels' => [
               'show' => true,
+              'name' => ['show' => true, 'fontFamily' => 'inherit'],
+              'value' => ['show' => true, 'fontFamily' => 'inherit'],
               'total' => [
                 'show' => true,
                 'label' => 'Total',
-                'color' => '#9ca3af',
+                'color' => '#6b7280',
+                'fontFamily' => 'inherit',
               ]
             ]
           ],
         ],
+      ],
+      'dataLabels' => [
+        'enabled' => true,
+        'style' => ['fontFamily' => 'inherit'],
+      ],
+      'tooltip' => [
+        'theme' => 'light',
+        'style' => ['fontFamily' => 'inherit'],
       ],
     ];
   }

@@ -8,28 +8,10 @@ use Carbon\Carbon;
 
 class StockMovementTrendChart extends ApexChartWidget
 {
-  /**
-   * Chart Id
-   *
-   * @var string
-   */
   protected static ?string $chartId = 'stockMovementTrendChart';
-
-  /**
-   * Widget Title
-   *
-   * @var string|null
-   */
-  protected static ?string $heading = 'Trend Pergerakan Stok (7 Hari Terakhir)';
-
+  protected static ?string $heading = 'Analisis Keluar Masuk Stok (7 Hari Terakhir)';
   protected static ?int $sort = 2;
 
-  /**
-   * Chart options (series, labels, types, size, animations...)
-   * https://apexcharts.com/docs/options
-   *
-   * @return array
-   */
   protected function getOptions(): array
   {
     $dates = collect(range(6, 0))->map(function ($daysAgo) {
@@ -40,11 +22,11 @@ class StockMovementTrendChart extends ApexChartWidget
     $dataOut = [];
 
     foreach ($dates as $date) {
-      $dataIn[] = StockMovement::where('type', 'in')
+      $dataIn[] = (int) StockMovement::where('type', 'in')
         ->whereDate('created_at', $date)
         ->sum('quantity');
 
-      $dataOut[] = StockMovement::where('type', 'out')
+      $dataOut[] = (int) StockMovement::where('type', 'out')
         ->whereDate('created_at', $date)
         ->sum('quantity');
     }
@@ -53,63 +35,45 @@ class StockMovementTrendChart extends ApexChartWidget
       'chart' => [
         'type' => 'area',
         'height' => 300,
-        'toolbar' => [
-          'show' => false,
-        ],
+        'fontFamily' => 'inherit',
+        'toolbar' => ['show' => false],
       ],
       'series' => [
-        [
-          'name' => 'Stok Masuk (IN)',
-          'data' => $dataIn,
-        ],
-        [
-          'name' => 'Stok Keluar (OUT)',
-          'data' => $dataOut,
-        ],
+        ['name' => 'Stok Masuk', 'data' => $dataIn],
+        ['name' => 'Stok Keluar', 'data' => $dataOut],
       ],
       'xaxis' => [
         'categories' => $dates->map(fn($d) => Carbon::parse($d)->format('d M'))->toArray(),
         'labels' => [
-          'style' => [
-            'colors' => '#9ca3af',
-            'fontWeight' => 600,
-          ],
+          'style' => ['colors' => '#9ca3af', 'fontSize' => '11px'],
         ],
+        'axisBorder' => ['show' => false],
+        'axisTicks' => ['show' => false],
       ],
       'yaxis' => [
         'labels' => [
-          'style' => [
-            'colors' => '#9ca3af',
-            'fontWeight' => 600,
-          ],
+          'style' => ['colors' => '#9ca3af'],
         ],
       ],
-      'colors' => ['#10b981', '#ef4444'], // Green for IN, Red for OUT
+      'colors' => ['#10b981', '#f43f5e'], // Emerald (In), Rose (Out)
       'fill' => [
         'type' => 'gradient',
         'gradient' => [
           'shadeIntensity' => 1,
-          'opacityFrom' => 0.45,
-          'opacityTo' => 0.05,
-          'stops' => [50, 100, 100],
+          'opacityFrom' => 0.5,
+          'opacityTo' => 0.2, // Slightly more visible at bottom
+          'stops' => [0, 90, 100],
         ],
       ],
-      'stroke' => [
-        'curve' => 'smooth',
-        'width' => 3,
-      ],
+      'stroke' => ['curve' => 'smooth', 'width' => 2],
+      'dataLabels' => ['enabled' => false],
       'grid' => [
-        'borderColor' => '#374151',
+        'borderColor' => '#f3f4f6',
         'strokeDashArray' => 4,
       ],
-      'markers' => [
-        'size' => 4,
-        'colors' => ['#fff'],
-        'strokeColors' => ['#10b981', '#ef4444'],
-        'strokeWidth' => 2,
-        'hover' => [
-          'size' => 7,
-        ]
+      'tooltip' => [
+        'theme' => 'light',
+        'style' => ['fontFamily' => 'inherit']
       ],
     ];
   }

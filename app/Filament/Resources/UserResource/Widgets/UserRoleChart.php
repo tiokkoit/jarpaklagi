@@ -8,7 +8,7 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 class UserRoleChart extends ApexChartWidget
 {
   protected static ?string $chartId = 'userRoleChart';
-  protected static ?string $heading = 'Distribusi Role User';
+  protected static ?string $heading = 'Komposisi Role Pengguna';
   protected static ?int $sort = 2;
 
   protected function getOptions(): array
@@ -24,27 +24,43 @@ class UserRoleChart extends ApexChartWidget
       'chart' => [
         'type' => 'donut',
         'height' => 300,
+        'fontFamily' => 'inherit',
+        'toolbar' => ['show' => false],
       ],
       'series' => $counts,
       'labels' => array_map('ucfirst', $roles),
       'legend' => [
         'position' => 'bottom',
+        'fontFamily' => 'inherit',
+        'labels' => [
+          'colors' => '#6b7280', // Text-gray-500
+        ],
       ],
-      'colors' => ['#ef4444', '#3b82f6', '#f59e0b'], // Red (Manager), Blue (Admin), Amber (Inventory)
+      // Manager (Rose), Admin (Sky), Inventory (Amber)
+      'colors' => ['#f43f5e', '#0ea5e9', '#f59e0b'],
+      'stroke' => ['width' => 0],
       'plotOptions' => [
         'pie' => [
           'donut' => [
-            'size' => '60%',
+            'size' => '65%',
             'labels' => [
               'show' => true,
               'total' => [
                 'show' => true,
-                'label' => 'Total',
-                'color' => '#9ca3af',
+                'label' => 'Total Users',
+                'color' => '#6b7280',
+                'fontFamily' => 'inherit',
               ]
             ]
           ],
         ],
+      ],
+      'tooltip' => [
+        'theme' => 'light',
+        'style' => ['fontFamily' => 'inherit'],
+      ],
+      'dataLabels' => [
+        'style' => ['fontFamily' => 'inherit'],
       ],
     ];
   }

@@ -11,34 +11,50 @@ class SalesReportStatsOverview extends BaseWidget
 {
   protected function getStats(): array
   {
-    $currentMonth = Carbon::now();
+    $now = Carbon::now();
+    $startOfMonth = $now->copy()->startOfMonth();
+    $endOfMonth = $now->copy()->endOfMonth();
 
-    $totalRevenueAllTime = SalesReport::where('status', 'SELESAI')->sum('total_price');
-    $revenueThisMonth = SalesReport::where('status', 'SELESAI')
-      ->whereYear('report_date', $currentMonth->year)
-      ->whereMonth('report_date', $currentMonth->month)
-      ->sum('total_price');
+    // Previous Month for comparison
+    $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
+    $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
 
-    $transactionsThisMonth = SalesReport::where('status', 'SELESAI')
-      ->whereYear('report_date', $currentMonth->year)
-      ->whereMonth('report_date', $currentMonth->month)
-      ->count();
+    // Revenue
+    $revenueThisMonth = SalesReport::where('status', 'SELESAI')->whereBetween('report_date', [$startOfMonth, $endOfMonth])->sum('total_price');
+    $revenueLastMonth = SalesReport::where('status', 'SELESAI')->whereBetween('report_date', [$startOfLastMonth, $endOfLastMonth])->sum('total_price');
+
+    $revenueTrend = $revenueThisMonth - $revenueLastMonth;
+    $revenueIcon = $revenueTrend >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down';
+    $revenueColor = $revenueTrend >= 0 ? 'success' : 'danger';
+
+    // Transactions
+    $trxThisMonth = SalesReport::where('status', 'SELESAI')->whereBetween('report_date', [$startOfMonth, $endOfMonth])->count();
+    $trxLastMonth = SalesReport::where('status', 'SELESAI')->whereBetween('report_date', [$startOfLastMonth, $endOfLastMonth])->count();
+
+    $trxTrend = $trxThisMonth - $trxLastMonth;
+    $trxIcon = $trxTrend >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down';
+    $trxColor = $trxTrend >= 0 ? 'success' : 'danger';
+
+    // Total All Time
+    $totalRevenue = SalesReport::where('status', 'SELESAI')->sum('total_price');
 
     return [
-      Stat::make('Total Pendapatan (All Time)', 'Rp ' . number_format($totalRevenueAllTime, 0, ',', '.'))
-        ->description('Total akumulasi pendapatan')
+      Stat::make('Total Omset (All Time)', 'Rp ' . number_format($totalRevenue, 0, ',', '.'))
+        ->description('Akumulasi pendapatan bersih')
         ->descriptionIcon('heroicon-m-banknotes')
-        ->color('success'),
+        ->color('primary')
+        ->chart([10, 15, 20, 25, 30, 35, 40]), // Mock upward trend
 
-      Stat::make('Pendapatan Bulan Ini', 'Rp ' . number_format($revenueThisMonth, 0, ',', '.'))
-        ->description('Omset bulan ' . $currentMonth->format('F'))
-        ->descriptionIcon('heroicon-m-currency-dollar')
-        ->color('primary'),
+      Stat::make('Omset Bulan Ini', 'Rp ' . number_format($revenueThisMonth, 0, ',', '.'))
+        ->description($revenueTrend >= 0 ? 'Naik dari bulan lalu' : 'Turun dari bulan lalu')
+        ->descriptionIcon($revenueIcon)
+        ->color($revenueColor)
+        ->chart([$revenueLastMonth, $revenueThisMonth]),
 
-      Stat::make('Transaksi Bulan Ini', $transactionsThisMonth)
-        ->description('Jumlah transaksi sukses')
-        ->descriptionIcon('heroicon-m-shopping-bag')
-        ->color('info'),
+      Stat::make('Transaksi Bulan Ini', $trxThisMonth . ' Trx')
+        ->description($trxTrend >= 0 ? 'Naik dari bulan lalu' : 'Turun dari bulan lalu')
+        ->descriptionIcon($trxIcon)
+        ->color($trxColor),
     ];
   }
 }

@@ -16,19 +16,22 @@ class ProductPackageStats extends BaseWidget
 
     return [
       Stat::make('Total Paket', $totalPackages)
-        ->description('Semua varian paket')
+        ->description('Varian paket tersedia')
         ->descriptionIcon('heroicon-m-archive-box')
-        ->color('primary'),
+        ->color('indigo')
+        ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
 
       Stat::make('Paket Aktif', $activePackages)
-        ->description('Siap dijual')
-        ->descriptionIcon('heroicon-m-check-circle')
-        ->color('success'),
+        ->description('Paket siap dipasarkan')
+        ->descriptionIcon('heroicon-m-check-badge')
+        ->color('success')
+        ->chart([3, 5, 3, 6, 3, 5, 3]),
 
       Stat::make('Rata-rata Harga', 'Rp ' . number_format($avgPrice ?? 0, 0, ',', '.'))
-        ->description('Average selling price')
-        ->descriptionIcon('heroicon-m-tag')
-        ->color('info'),
+        ->description('Nilai rata-rata paket')
+        ->descriptionIcon('heroicon-m-currency-dollar')
+        ->color('warning')
+        ->chart([5, 6, 7, 8, 9, 10, 11]),
     ];
   }
 }

@@ -11,25 +11,21 @@ class UserStatsOverview extends BaseWidget
   protected function getStats(): array
   {
     return [
-      Stat::make('Total Users', User::count())
+      Stat::make('Total Pengguna', User::count())
         ->description('Semua akun terdaftar')
         ->descriptionIcon('heroicon-m-users')
-        ->color('primary'),
+        ->color('primary')
+        ->chart([1, 2, 3, 5, User::count()]),
 
-      Stat::make('Admins', User::where('role', 'admin')->count())
-        ->description('Role Administrator')
+      Stat::make('Manager', User::where('role', 'manager')->count())
+        ->description('Akses Full Control')
         ->descriptionIcon('heroicon-m-shield-check')
-        ->color('success'),
+        ->color('danger'), // Red for high privilege
 
-      Stat::make('Managers', User::where('role', 'manager')->count())
-        ->description('Role Manager')
-        ->descriptionIcon('heroicon-m-briefcase')
-        ->color('danger'),
-
-      Stat::make('Inventory Staff', User::where('role', 'inventory')->count())
-        ->description('Role Inventory')
+      Stat::make('Staf Gudang', User::where('role', 'inventory')->count())
+        ->description('Officer Inventory')
         ->descriptionIcon('heroicon-m-truck')
-        ->color('warning'),
+        ->color('warning'), // Amber
     ];
   }
 }

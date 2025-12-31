@@ -38,7 +38,7 @@ class PaymentMethodChart extends ApexChartWidget
       $colors = ['#e5e7eb'];
       $tooltip = false;
     } else {
-      $colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+      $colors = ['#6366f1', '#d946ef', '#ec4899', '#f59e0b', '#10b981']; // Indigo, Fuchsia, Pink, Amber, Emerald
       $tooltip = true;
     }
 

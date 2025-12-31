@@ -8,12 +8,12 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 class ProductValueChart extends ApexChartWidget
 {
   protected static ?string $chartId = 'productValueChart';
-  protected static ?string $heading = 'Top 10 Aset Terbesar';
+  protected static ?string $heading = 'Valuasi Aset Produk (Top 50)';
   protected static ?int $sort = 3;
 
   protected function getOptions(): array
   {
-    // 1. Fetch Real Data
+    // 1. Fetch & Process Data
     $products = Product::all();
 
     $data = $products->map(function ($item) {
@@ -21,57 +21,87 @@ class ProductValueChart extends ApexChartWidget
         'name' => $item->name ?? 'Unknown',
         'value' => (int) ($item->stock * $item->hpp),
       ];
-    })->sortByDesc('value')->take(10);
-
-    // Fail-safe for empty data
-    if ($data->isEmpty()) {
-      return [
-        'chart' => ['type' => 'bar', 'height' => 300],
-        'series' => [],
-        'title' => ['text' => 'Belum ada data produk', 'align' => 'center'],
-      ];
-    }
+    })->sortByDesc('value')->take(50); // Cap at 50 to prevent crash if 'All' is too huge
 
     $names = array_values($data->pluck('name')->toArray());
     $values = array_values($data->pluck('value')->toArray());
 
+    // 2. Dynamic Height
+    $minHeight = 400;
+    $dynamicHeight = count($names) * 25; // Compact bars
+    $height = $dynamicHeight > $minHeight ? $dynamicHeight : $minHeight;
+
     return [
       'chart' => [
         'type' => 'bar',
-        'height' => 300,
+        'height' => $height,
         'fontFamily' => 'inherit',
         'toolbar' => ['show' => false],
       ],
       'series' => [
         [
-          'name' => 'Valuasi',
+          'name' => 'Nilai Aset',
           'data' => $values,
-        ],
-      ],
-      'xaxis' => [
-        'categories' => $names,
-        'labels' => [
-          'style' => ['colors' => '#9ca3af'],
-        ],
-      ],
-      'yaxis' => [
-        'labels' => [
-          'style' => ['colors' => '#9ca3af'],
         ],
       ],
       'plotOptions' => [
         'bar' => [
           'borderRadius' => 4,
           'horizontal' => true,
-          'distributed' => true,
+          'barHeight' => '60%',
+          'distributed' => false,
         ],
       ],
-      // Removed JS formatter to prevent rendering crash
+      'xaxis' => [
+        'categories' => $names,
+        'labels' => [
+          'style' => [
+            'colors' => '#6b7280',
+            'fontSize' => '11px',
+            'fontWeight' => 600,
+          ],
+        ],
+        'axisBorder' => ['show' => false],
+        'axisTicks' => ['show' => false],
+      ],
+      'yaxis' => [
+        'labels' => [
+          'style' => [
+            'colors' => '#6b7280',
+            'fontSize' => '11px',
+            'fontWeight' => 500,
+          ],
+        ],
+      ],
+      'colors' => ['#8b5cf6'],
+      'fill' => [
+        'type' => 'gradient',
+        'gradient' => [
+          'shade' => 'light',
+          'type' => 'horizontal',
+          'shadeIntensity' => 0.25,
+          'gradientToColors' => ['#f43f5e'], // Rose
+          'inverseColors' => true,
+          'opacityFrom' => 0.85,
+          'opacityTo' => 0.85,
+          'stops' => [0, 100]
+        ],
+      ],
+      // DISABLED JS FORMATTERS TO FIX BLANK SCREEN
       'dataLabels' => [
         'enabled' => true,
+        'textAnchor' => 'start',
+        'style' => [
+          'colors' => ['#ffffff'],
+          'fontSize' => '10px',
+        ],
+        'offsetX' => 0,
       ],
-      'colors' => ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#f59e0b', '#84cc16'],
-      'legend' => ['show' => false],
+      'grid' => [
+        'show' => true,
+        'borderColor' => '#e5e7eb',
+        'strokeDashArray' => 4,
+      ],
     ];
   }
 }

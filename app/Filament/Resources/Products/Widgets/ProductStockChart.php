@@ -7,87 +7,78 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class ProductStockChart extends ApexChartWidget
 {
-  /**
-   * Chart Id
-   *
-   * @var string
-   */
   protected static ?string $chartId = 'productStockChart';
-
-  /**
-   * Widget Title
-   *
-   * @var string|null
-   */
-  protected static ?string $heading = 'Top 10 Inventory Levels';
-
-  /**
-   * Sort
-   */
+  protected static ?string $heading = 'Top 10 Level Stok Tertinggi';
   protected static ?int $sort = 2;
 
-  /**
-   * Chart options (series, labels, types, size, animations...)
-   * https://apexcharts.com/docs/options
-   *
-   * @return array
-   */
   protected function getOptions(): array
   {
     $products = Product::orderBy('stock', 'desc')->take(10)->get();
 
     $names = $products->pluck('name')->toArray();
     $stocks = $products->pluck('stock')->toArray();
+
+    // Critical color logic
     $colors = $products->map(function ($product) {
       if ($product->stock == 0)
-        return '#ef4444'; // red
+        return '#f43f5e'; // Rose
       if ($product->stock <= 10)
-        return '#f59e0b'; // amber
-      return '#10b981'; // emerald
+        return '#f59e0b'; // Amber
+      return '#10b981'; // Emerald
     })->toArray();
+
+    // Fail-safe colors if empty
+    if (empty($colors))
+      $colors = ['#10b981'];
 
     return [
       'chart' => [
         'type' => 'bar',
         'height' => 300,
+        'fontFamily' => 'inherit',
+        'toolbar' => ['show' => false],
       ],
       'series' => [
         [
-          'name' => 'Stock Quantity',
+          'name' => 'Stok',
           'data' => $stocks,
         ],
       ],
       'xaxis' => [
         'categories' => $names,
         'labels' => [
-          'style' => [
-            'colors' => '#9ca3af',
-            'fontWeight' => 600,
-          ],
+          'style' => ['colors' => '#9ca3af', 'fontSize' => '11px'],
         ],
+        'axisBorder' => ['show' => false],
+        'axisTicks' => ['show' => false],
       ],
       'yaxis' => [
         'labels' => [
-          'style' => [
-            'colors' => '#9ca3af',
-            'fontWeight' => 600,
-          ],
+          'style' => ['colors' => '#9ca3af'],
         ],
       ],
       'plotOptions' => [
         'bar' => [
           'borderRadius' => 4,
-          'horizontal' => false,
-          'distributed' => true,
+          'horizontal' => false, // Vertical bars
+          'distributed' => true, // Needed for individual colors
+          'columnWidth' => '50%',
         ],
       ],
-      'colors' => $colors,
+      'colors' => $colors, // Apply dynamic colors
       'dataLabels' => [
         'enabled' => false,
       ],
       'grid' => [
-        'show' => false,
+        'show' => true,
+        'borderColor' => '#f3f4f6',
+        'strokeDashArray' => 4,
       ],
+      'tooltip' => [
+        'theme' => 'light',
+        'style' => ['fontFamily' => 'inherit'],
+      ],
+      'legend' => ['show' => false],
     ];
   }
 }
