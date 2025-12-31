@@ -36,8 +36,8 @@ class UserRoleChart extends ApexChartWidget
           'colors' => '#6b7280', // Text-gray-500
         ],
       ],
-      // Manager (Rose), Admin (Sky), Inventory (Amber)
-      'colors' => ['#f43f5e', '#0ea5e9', '#f59e0b'],
+      // Manager (Rose), Admin (Green), Inventory (Amber)
+      'colors' => ['#f43f5e', '#10b981', '#f59e0b'],
       'stroke' => ['width' => 0],
       'plotOptions' => [
         'pie' => [

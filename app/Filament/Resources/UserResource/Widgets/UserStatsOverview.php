@@ -13,18 +13,23 @@ class UserStatsOverview extends BaseWidget
     return [
       Stat::make('Total Pengguna', User::count())
         ->description('Semua akun terdaftar')
-        ->descriptionIcon('heroicon-m-users')
-        ->color('primary')
+        ->descriptionIcon('heroicon-s-users')
+        ->color('indigo')
         ->chart([1, 2, 3, 5, User::count()]),
 
       Stat::make('Manager', User::where('role', 'manager')->count())
         ->description('Akses Full Control')
-        ->descriptionIcon('heroicon-m-shield-check')
-        ->color('danger'), // Red for high privilege
+        ->descriptionIcon('heroicon-s-shield-check')
+        ->color('danger'), // Rose
+
+      Stat::make('Admin', User::where('role', 'admin')->count())
+        ->description('Administrator sistem')
+        ->descriptionIcon('heroicon-s-cog-6-tooth')
+        ->color('success'), // Green as requested
 
       Stat::make('Staf Gudang', User::where('role', 'inventory')->count())
         ->description('Officer Inventory')
-        ->descriptionIcon('heroicon-m-truck')
+        ->descriptionIcon('heroicon-s-truck')
         ->color('warning'), // Amber
     ];
   }
