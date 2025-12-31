@@ -14,6 +14,8 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Orders\OrderResource;
+use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
+use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
 
 class ListOrders extends ListRecords
 {
@@ -43,6 +45,14 @@ class ListOrders extends ListRecords
                 ->url(OrderResource::getUrl('create'))
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            OrderStatsOverview::class,
+            OrderStatusChart::class,
         ];
     }
 

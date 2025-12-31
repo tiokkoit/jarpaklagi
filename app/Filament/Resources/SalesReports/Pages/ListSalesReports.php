@@ -12,6 +12,9 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SalesReports\SalesReportResource;
+use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
+use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
+use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
@@ -20,6 +23,15 @@ use Filament\Forms\Components\DatePicker;
 class ListSalesReports extends ListRecords
 {
     protected static string $resource = SalesReportResource::class;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            SalesReportStatsOverview::class,
+            SalesRevenueChart::class,
+            PaymentMethodChart::class,
+        ];
+    }
 
     protected function getHeaderActions(): array
     {

@@ -18,4 +18,12 @@ class ListUsers extends ListRecords
         ->icon('heroicon-o-plus'),
     ];
   }
+
+  protected function getHeaderWidgets(): array
+  {
+    return [
+      \App\Filament\Resources\UserResource\Widgets\UserStatsOverview::class,
+      \App\Filament\Resources\UserResource\Widgets\UserRoleChart::class,
+    ];
+  }
 }
