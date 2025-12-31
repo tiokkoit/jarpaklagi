@@ -38,6 +38,10 @@ use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
 use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 
+// New Dashboard Widgets
+use App\Filament\Widgets\DashboardStatsOverview;
+use App\Filament\Widgets\TopSellingProductsChart;
+
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -76,29 +80,31 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                    // Row 1: Global Stats
+                    // Row 1: Global Strategic Overview (New)
+                DashboardStatsOverview::class,
+
+                    // Row 2: Financial & Activity Trends (High Priority)
+                RevenueAnalyticsChart::class,
+                OrdersTrendsChart::class,
+
+                    // Row 3: Product Intelligence (New)
+                TopSellingProductsChart::class,
+
+                    // Row 4: Detailed Resource Stats (Existing)
                 OrderStatsOverview::class,
                 SalesReportStatsOverview::class,
-
-                    // Row 2: Secondary Stats
                 StockMovementStats::class,
                 ProductStatsOverview::class,
                 ProductPackageStats::class,
 
-                    // Row 3: Primary Trends (Full Width or Large)
-                OrdersTrendsChart::class,       // New
-                RevenueAnalyticsChart::class,   // New
-
-                    // Row 4: Detailed Analysis
+                    // Row 5: Granular/Specific Charts
                 OrderStatusChart::class,
-                SalesRevenueChart::class, // Keep existing revenue chart as valid alternative or remove if redundant? Keeping for now as it has different view (90 days vs 30 days mixed)
+                SalesRevenueChart::class,
                 PaymentMethodChart::class,
-
-                    // Row 5: Stock & Product Analysis
-                StockActivityChart::class,      // New
+                StockActivityChart::class,
                 ProductStockChart::class,
                 ProductValueChart::class,
-                ProductPriceRangeChart::class,  // New
+                ProductPriceRangeChart::class,
                 ProductPackageActiveChart::class,
             ])
             ->plugins([
