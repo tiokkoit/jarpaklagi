@@ -16,18 +16,28 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+
+// Widgets - Stats Overview
 use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
-use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
 use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
+use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
 use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
+
+// Widgets - Charts (Existing)
 use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
-use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
 use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
 use App\Filament\Resources\Products\Widgets\ProductStockChart;
 use App\Filament\Resources\Products\Widgets\ProductValueChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageActiveChart;
+
+// Widgets - Charts (New)
+use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
+use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
+use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
+use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
+
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -39,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->profile() // Default profile for name, email, password
+            ->profile()
             ->colors([
                 'primary' => Color::Emerald,
                 'teal' => Color::Teal,
@@ -66,17 +76,29 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                    // Row 1: Global Stats
                 OrderStatsOverview::class,
-                StockMovementStats::class,
                 SalesReportStatsOverview::class,
+
+                    // Row 2: Secondary Stats
+                StockMovementStats::class,
                 ProductStatsOverview::class,
                 ProductPackageStats::class,
+
+                    // Row 3: Primary Trends (Full Width or Large)
+                OrdersTrendsChart::class,       // New
+                RevenueAnalyticsChart::class,   // New
+
+                    // Row 4: Detailed Analysis
                 OrderStatusChart::class,
-                StockMovementTrendChart::class,
-                SalesRevenueChart::class,
+                SalesRevenueChart::class, // Keep existing revenue chart as valid alternative or remove if redundant? Keeping for now as it has different view (90 days vs 30 days mixed)
                 PaymentMethodChart::class,
+
+                    // Row 5: Stock & Product Analysis
+                StockActivityChart::class,      // New
                 ProductStockChart::class,
                 ProductValueChart::class,
+                ProductPriceRangeChart::class,  // New
                 ProductPackageActiveChart::class,
             ])
             ->plugins([

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
 use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
+use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
 
 class ListOrders extends ListRecords
 {
@@ -52,6 +53,7 @@ class ListOrders extends ListRecords
     {
         return [
             OrderStatsOverview::class,
+            OrdersTrendsChart::class,
             OrderStatusChart::class,
         ];
     }

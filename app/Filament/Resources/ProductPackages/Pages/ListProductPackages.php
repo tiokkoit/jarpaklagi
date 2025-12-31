@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductPackages\ProductPackageResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
+use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
 
 class ListProductPackages extends ListRecords
 {
@@ -25,6 +26,7 @@ class ListProductPackages extends ListRecords
     {
         return [
             ProductPackageStats::class,
+            ProductPriceRangeChart::class,
             \App\Filament\Resources\ProductPackages\Widgets\ProductPackageActiveChart::class,
         ];
     }

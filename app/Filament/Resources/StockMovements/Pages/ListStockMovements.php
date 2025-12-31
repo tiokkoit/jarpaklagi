@@ -8,6 +8,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use App\Filament\Resources\StockMovements\StockMovementResource;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
+use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 
 
 class ListStockMovements extends ListRecords
@@ -28,6 +29,7 @@ class ListStockMovements extends ListRecords
     {
         return [
             StockMovementStats::class,
+            StockActivityChart::class,
             StockMovementTrendChart::class,
         ];
     }

@@ -15,6 +15,7 @@ use App\Filament\Resources\SalesReports\SalesReportResource;
 use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
 use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
+use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
@@ -28,6 +29,7 @@ class ListSalesReports extends ListRecords
     {
         return [
             SalesReportStatsOverview::class,
+            RevenueAnalyticsChart::class,
             SalesRevenueChart::class,
             PaymentMethodChart::class,
         ];
