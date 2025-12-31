@@ -18,7 +18,18 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Widgets\InventoryStatsOverview;
+use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
+use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
+use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
+use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
+use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
+use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
+use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
+use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
+use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
+use App\Filament\Resources\Products\Widgets\ProductStockChart;
+use App\Filament\Resources\Products\Widgets\ProductValueChart;
+use App\Filament\Resources\ProductPackages\Widgets\ProductPackageActiveChart;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -57,7 +68,18 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                InventoryStatsOverview::class,
+                OrderStatsOverview::class,
+                StockMovementStats::class,
+                SalesReportStatsOverview::class,
+                ProductStatsOverview::class,
+                ProductPackageStats::class,
+                OrderStatusChart::class,
+                StockMovementTrendChart::class,
+                SalesRevenueChart::class,
+                PaymentMethodChart::class,
+                ProductStockChart::class,
+                ProductValueChart::class,
+                ProductPackageActiveChart::class,
             ])
             ->plugins([
                 FilamentApexChartsPlugin::make()
