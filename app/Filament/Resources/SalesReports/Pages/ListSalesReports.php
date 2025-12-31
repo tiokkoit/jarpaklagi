@@ -30,6 +30,7 @@ class ListSalesReports extends ListRecords
         return [
             SalesReportStatsOverview::class,
             RevenueAnalyticsChart::class,
+            \App\Filament\Resources\SalesReports\Widgets\ProfitTrendChart::class, // New
             SalesRevenueChart::class,
             PaymentMethodChart::class,
         ];

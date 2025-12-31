@@ -41,6 +41,8 @@ use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 // New Dashboard Widgets
 use App\Filament\Widgets\DashboardStatsOverview;
 use App\Filament\Widgets\TopSellingProductsChart;
+use App\Filament\Widgets\ProfitLossOverview;
+use App\Filament\Widgets\CustomerGeographyChart;
 
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
@@ -80,17 +82,19 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                    // Row 1: Global Strategic Overview (New)
+                    // Row 1: Global Strategic Overview
                 DashboardStatsOverview::class,
+                ProfitLossOverview::class, // New Financial Intel
 
-                    // Row 2: Financial & Activity Trends (High Priority)
+                    // Row 2: Financial & Activity Trends
                 RevenueAnalyticsChart::class,
                 OrdersTrendsChart::class,
 
-                    // Row 3: Product Intelligence (New)
+                    // Row 3: Product & Customer Intelligence
                 TopSellingProductsChart::class,
+                CustomerGeographyChart::class, // New Customer Intel
 
-                    // Row 4: Detailed Resource Stats (Existing)
+                    // Row 4: Detailed Resource Stats
                 OrderStatsOverview::class,
                 SalesReportStatsOverview::class,
                 StockMovementStats::class,

@@ -47,7 +47,8 @@ class DashboardStatsOverview extends BaseWidget
         ->description($revenueDescText)
         ->descriptionIcon($revenueIcon)
         ->color($revenueColor)
-        ->chart([$lastMonthRevenue, $currentMonthRevenue]) // Simple tiny chart
+        // Removed chart() temporarily if it causes issues, or keep simple array
+        ->chart([$lastMonthRevenue, $currentMonthRevenue])
         ->extraAttributes([
           'class' => 'cursor-pointer',
         ]),

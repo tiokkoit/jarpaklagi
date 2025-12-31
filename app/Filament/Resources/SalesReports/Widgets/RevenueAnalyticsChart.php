@@ -65,7 +65,6 @@ class RevenueAnalyticsChart extends ApexChartWidget
           ],
           'labels' => [
             'style' => ['colors' => '#10b981', 'fontFamily' => 'inherit'],
-            // JS formatter removed to fix blank chart issue
           ],
         ],
         [

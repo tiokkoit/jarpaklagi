@@ -17,6 +17,8 @@ use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
 use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
 use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
+use App\Filament\Resources\Orders\Widgets\OperationalEfficiencyStats;
+use App\Filament\Resources\Orders\Widgets\OrderPeakTimeChart;
 
 class ListOrders extends ListRecords
 {
@@ -53,7 +55,9 @@ class ListOrders extends ListRecords
     {
         return [
             OrderStatsOverview::class,
+            OperationalEfficiencyStats::class, // New
             OrdersTrendsChart::class,
+            OrderPeakTimeChart::class, // New
             OrderStatusChart::class,
         ];
     }

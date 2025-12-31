@@ -26,6 +26,7 @@ class ListProducts extends ListRecords
     {
         return [
             ProductStatsOverview::class,
+            \App\Filament\Resources\Products\Widgets\InventoryHealthStats::class, // New
             ProductStockChart::class,
             \App\Filament\Resources\Products\Widgets\ProductValueChart::class,
         ];

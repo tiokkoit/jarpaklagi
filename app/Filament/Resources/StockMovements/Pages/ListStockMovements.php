@@ -29,6 +29,7 @@ class ListStockMovements extends ListRecords
     {
         return [
             StockMovementStats::class,
+            \App\Filament\Resources\StockMovements\Widgets\StockShrinkageStat::class, // New
             StockActivityChart::class,
             StockMovementTrendChart::class,
         ];
