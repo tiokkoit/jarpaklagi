@@ -347,7 +347,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-2">
           <div class="relative inline-block mb-8">
              <div class="absolute -inset-4 rounded-full bg-brand-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-rafael.jpg') }}" alt="Muhammad Rafael" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-brand-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-rafael.png') }}" alt="Muhammad Rafael" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-brand-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-brand-300 transition-colors tracking-tight">Muhammad Rafael Putra A.</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323084</p>
@@ -357,7 +357,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-3">
           <div class="relative inline-block mb-8">
             <div class="absolute -inset-4 rounded-full bg-blue-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-gala.jpg') }}" alt="Gala Septio" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-blue-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-gala.png') }}" alt="Gala Septio" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-blue-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-blue-300 transition-colors tracking-tight text-nowrap">Gala Septio Wamar</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323046</p>
@@ -367,7 +367,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-4">
           <div class="relative inline-block mb-8">
             <div class="absolute -inset-4 rounded-full bg-blue-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-angga.jpg') }}" alt="Angga Adi" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-blue-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-angga.png') }}" alt="Angga Adi" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-blue-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-blue-300 transition-colors tracking-tight">Angga Adi Prasetyo</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323015</p>
@@ -377,7 +377,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-5">
           <div class="relative inline-block mb-8">
             <div class="absolute -inset-4 rounded-full bg-pink-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-anya.jpg') }}" alt="Anya Lareina" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-pink-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-anya.png') }}" alt="Anya Lareina" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-pink-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-pink-300 transition-colors tracking-tight text-nowrap">Anya Lareina C.W.</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323016</p>
@@ -387,7 +387,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-6">
           <div class="relative inline-block mb-8">
             <div class="absolute -inset-4 rounded-full bg-purple-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-ropita.jpg') }}" alt="Ropita Sinambela" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-purple-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-ropita.png') }}" alt="Ropita Sinambela" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-purple-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-purple-300 transition-colors tracking-tight">Ropita Sari Sinambela</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323107</p>
@@ -397,7 +397,7 @@
         <div class="glass-card p-10 rounded-[3rem] text-center group child-reveal delay-7">
           <div class="relative inline-block mb-8">
             <div class="absolute -inset-4 rounded-full bg-orange-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('images/team-zakky.jpg') }}" alt="Zakky Muhammad" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-orange-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
+            <img src="{{ asset('images/team-zakky.png') }}" alt="Zakky Muhammad" class="relative z-10 w-36 h-36 mx-auto rounded-full object-cover border-4 border-transparent group-hover:border-orange-400 transition-all duration-700 group-hover:scale-110 shadow-xl">
           </div>
           <h4 class="text-xl font-black mb-2 text-white group-hover:text-orange-300 transition-colors tracking-tight">Zakky Muhammad Wildan</h4>
           <p class="text-slate-500 text-[11px] mb-6 font-bold tracking-widest">I0323120</p>
