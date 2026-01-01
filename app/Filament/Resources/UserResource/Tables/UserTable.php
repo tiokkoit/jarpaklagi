@@ -86,6 +86,7 @@ class UserTable
           ->modalHeading('Reset Password')
           ->modalDescription(fn($record) => "Reset password untuk {$record->name}? Password baru akan menjadi: password123")
           ->modalSubmitActionLabel('Ya, Reset Password')
+          ->modalCancelActionLabel('Batal')
           ->action(function ($record) {
             $record->update([
               'password' => Hash::make(UserResource::DEFAULT_PASSWORD),
@@ -100,13 +101,19 @@ class UserTable
           }),
 
         EditAction::make(),
-        DeleteAction::make(),
+        DeleteAction::make()
+        ->modalHeading('Hapus Pengguna')
+        ->modalDescription(fn($record) => "Apakah Anda yakin ingin menghapus data {$record->name}? Tindakan ini tidak dapat dibatalkan.")
+        ->modalSubmitActionLabel('Ya, Hapus')
+        ->modalCancelActionLabel('Batal')
+        ->successNotification(
+          Notification::make()
+              ->success()
+              ->title('Pengguna Berhasil Dihapus')
+              ->body('Data pengguna telah dihapus secara permanen dari sistem.')
+      ),
       ])
-      ->bulkActions([
-        BulkActionGroup::make([
-          DeleteBulkAction::make(),
-        ]),
-      ])
+      ->recordUrl(null)
       ->defaultSort('created_at', 'desc');
   }
 }
