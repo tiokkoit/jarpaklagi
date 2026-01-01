@@ -107,30 +107,46 @@
 
   <nav class="fixed top-0 w-full z-50 glass-nav transition-all duration-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-24 transition-all duration-500" id="nav-container">
+      <div class="flex justify-between items-center h-20 md:h-24 transition-all duration-500" id="nav-container">
         <div class="flex-shrink-0 flex items-center gap-4 group cursor-pointer relative">
           <div class="absolute inset-0 bg-brand-500/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <img src="{{ asset('images/stockku-logo.png') }}" alt="Stockku Logo" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-500 relative z-10">
+          <img src="{{ asset('images/stockku-logo.png') }}" alt="Stockku Logo" class="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform duration-500 relative z-10">
           <div>
-            <span class="block text-xl font-extrabold tracking-tight text-white leading-none group-hover:text-brand-400 transition-colors duration-300 uppercase">Stockku<span class="text-brand-400 group-hover:text-white transition-colors duration-300">App</span></span>
-            <span class="block text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold italic opacity-80 mt-1">Hibah Pembelajaran Berdampak (Agustus 2025 - Januari 2026)</span>
+            <span class="block text-lg md:text-xl font-extrabold tracking-tight text-white leading-none group-hover:text-brand-400 transition-colors duration-300 uppercase text-nowrap">Stockku<span class="text-brand-400 group-hover:text-white transition-colors duration-300">App</span></span>
+            <span class="hidden sm:block text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold italic opacity-80 mt-1">Hibah Pembelajaran Berdampak (2025-2026)</span>
           </div>
         </div>
 
-        <div class="hidden md:flex items-center space-x-10">
+        <div class="hidden md:flex items-center space-x-8 lg:space-x-10">
           <a href="#about-app" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1">Mitra<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
-          <a href="#app-features" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1">Fitur Aplikasi<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
-          <a href="#features" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1 text-nowrap">Integrasi Keilmuan<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
+          <a href="#app-features" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1">Fitur<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
+          <a href="#features" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1 text-nowrap">Integrasi<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
           <a href="#team" class="text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-widest relative group overflow-hidden py-1">Tim<span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span></a>
           
           <div class="flex items-center gap-3 pl-6 border-l border-white/10">
-            <a href="{{ route('filament.admin.auth.login') }}" class="px-7 py-3 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-[11px] font-black uppercase tracking-tighter transition-all shadow-[0_0_25px_rgba(34,197,94,0.4)] hover:shadow-[0_0_35px_rgba(34,197,94,0.6)] transform hover:-translate-y-1 active:scale-95 relative overflow-hidden group">
-                <span class="relative z-10">Akses Dashboard</span>
-                <div class="absolute inset-0 h-full w-full scale-0 rounded-full group-hover:scale-150 group-active:scale-100 transition-all duration-500 bg-white/20"></div>
+            <a href="{{ route('filament.admin.auth.login') }}" class="px-6 py-3 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-[10px] font-black uppercase tracking-tighter transition-all shadow-[0_0_25px_rgba(34,197,94,0.4)] hover:shadow-[0_0_35px_rgba(34,197,94,0.6)] transform hover:-translate-y-1 active:scale-95 relative overflow-hidden group">
+              <span class="relative z-10">Dashboard</span>
+              <div class="absolute inset-0 h-full w-full scale-0 rounded-full group-hover:scale-150 group-active:scale-100 transition-all duration-500 bg-white/20"></div>
             </a>
           </div>
         </div>
+
+        <div class="md:hidden flex items-center">
+            <button id="mobile-menu-button" class="text-white p-2 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
       </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-dark-950/95 backdrop-blur-3xl border-b border-white/10 px-4 py-6 space-y-4">
+        <a href="#about-app" class="block text-slate-300 hover:text-brand-400 text-sm font-bold uppercase tracking-widest py-2">Mitra</a>
+        <a href="#app-features" class="block text-slate-300 hover:text-brand-400 text-sm font-bold uppercase tracking-widest py-2">Fitur Aplikasi</a>
+        <a href="#features" class="block text-slate-300 hover:text-brand-400 text-sm font-bold uppercase tracking-widest py-2">Integrasi Keilmuan</a>
+        <a href="#team" class="block text-slate-300 hover:text-brand-400 text-sm font-bold uppercase tracking-widest py-2">Tim</a>
+        <div class="pt-4 border-t border-white/10">
+            <a href="{{ route('filament.admin.auth.login') }}" class="block w-full text-center px-6 py-4 rounded-2xl bg-brand-500 text-white text-xs font-black uppercase tracking-widest">Akses Dashboard</a>
+        </div>
     </div>
   </nav>
 
@@ -530,6 +546,30 @@
             navContainer.classList.add('h-24');
             navContainer.classList.remove('h-20');
         }
+    });
+
+    // Mobile Menu Toggle Logic
+    const menuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // Ubah icon hamburger ke X saat terbuka
+        if (mobileMenu.classList.contains('hidden')) {
+            menuIcon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+        } else {
+            menuIcon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+        }
+    });
+
+    // Close mobile menu when clicking a link
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            menuIcon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+        });
     });
   </script>
 
