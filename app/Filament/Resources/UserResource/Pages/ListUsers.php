@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\UserResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,8 +14,8 @@ class ListUsers extends ListRecords
   {
     return [
       CreateAction::make()
-        ->label('New user')
-        ->icon('heroicon-o-plus'),
+        ->label('Tambah Pengguna')
+        ->icon('heroicon-o-user-plus'),
     ];
   }
 

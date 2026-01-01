@@ -7,8 +7,8 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class UserRoleChart extends ApexChartWidget
 {
-  protected static ?string $chartId = 'userRoleChart';
-  protected static ?string $heading = 'Komposisi Role Pengguna';
+  protected static ?string $chartId = null;
+  protected static ?string $heading = 'Presetase Role Pengguna';
   protected static ?int $sort = 2;
 
   protected function getOptions(): array
@@ -47,7 +47,7 @@ class UserRoleChart extends ApexChartWidget
               'show' => true,
               'total' => [
                 'show' => true,
-                'label' => 'Total Users',
+                'label' => 'Total Pengguna',
                 'color' => '#6b7280',
                 'fontFamily' => 'inherit',
               ]
