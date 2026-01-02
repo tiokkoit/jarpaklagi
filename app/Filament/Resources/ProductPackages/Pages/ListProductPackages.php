@@ -7,9 +7,9 @@ use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\ProductPackages\ProductPackageResource;
 use App\Filament\Resources\ProductPackages\Widgets\PackageMarginChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
-use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
+
 use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
-use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
+
 use App\Filament\Resources\ProductPackages\Widgets\PackageProfitNominalChart;
 
 class ListProductPackages extends ListRecords
@@ -26,6 +26,7 @@ class ListProductPackages extends ListRecords
         ];
     }
 
+
     protected function getHeaderWidgets(): array
     {
         return [
@@ -33,8 +34,6 @@ class ListProductPackages extends ListRecords
             PackageMarginChart::class,
             PackageProfitNominalChart::class,
             ProductPriceRangeChart::class,
-            PackageBottleneckChart::class,
-            PackageCostStructureChart::class,
         ];
     }
 }

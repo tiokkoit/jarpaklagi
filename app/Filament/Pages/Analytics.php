@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
+use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
 use Filament\Pages\Page;
 use App\Filament\Resources\Products\Widgets\AbcParetoChart;
 use BackedEnum;
@@ -21,6 +23,8 @@ class Analytics extends Page
   {
     return [
       AbcParetoChart::class,
+      PackageBottleneckChart::class,
+      PackageCostStructureChart::class,
     ];
   }
 }
