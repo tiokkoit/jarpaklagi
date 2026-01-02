@@ -14,11 +14,11 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Orders\OrderResource;
-use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
 use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
-use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
-use App\Filament\Resources\Orders\Widgets\OperationalEfficiencyStats;
 use App\Filament\Resources\Orders\Widgets\OrderPeakTimeChart;
+use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
+use App\Filament\Resources\Orders\Widgets\NewOrdersTrendChart;
+use App\Filament\Resources\Orders\Widgets\OperationalEfficiencyStats;
 
 class ListOrders extends ListRecords
 {
@@ -55,10 +55,8 @@ class ListOrders extends ListRecords
     {
         return [
             OrderStatsOverview::class,
-            #OperationalEfficiencyStats::class, // New
-            OrdersTrendsChart::class,
-            OrderPeakTimeChart::class, // New
-            OrderStatusChart::class,
+            NewOrdersTrendChart::class,
+            OrderPeakTimeChart::class, 
         ];
     }
 

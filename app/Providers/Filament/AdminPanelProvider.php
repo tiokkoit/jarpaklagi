@@ -87,7 +87,6 @@ class AdminPanelProvider extends PanelProvider
 
                     // Row 2: Financial & Activity Trends
                 RevenueAnalyticsChart::class,
-                OrdersTrendsChart::class,
 
                     // Row 3: Product & Customer Intelligence
                 TopSellingProductsChart::class,
