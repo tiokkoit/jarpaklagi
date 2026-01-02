@@ -8,6 +8,8 @@ use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Products\Widgets\AbcParetoChart;
 use App\Filament\Resources\Products\Widgets\StockLevelChart;
 use App\Filament\Resources\Products\Widgets\StockHealthChart;
+use App\Filament\Resources\Products\Widgets\ProductValueChart;
+use App\Filament\Resources\Products\Widgets\ProductHppChart;
 use App\Filament\Resources\Products\Widgets\ProductStockChart;
 use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
 
@@ -29,9 +31,10 @@ class ListProducts extends ListRecords
     {
         return [
             ProductStatsOverview::class,
-            AbcParetoChart::class,
             StockHealthChart::class,
             StockLevelChart::class,
+            ProductValueChart::class,
+            ProductHppChart::class,
         ];
     }
 }
