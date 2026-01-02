@@ -24,7 +24,7 @@ class ProductStatsOverview extends BaseWidget
         return [
             // --- BARIS ATAS: OVERVIEW ASET ---
             
-            Stat::make('Valuasi Aset Barang', 'Rp ' . number_format($totalInventoryValue, 0, ',', '.'))
+            Stat::make('Valuasi Aset Produk', 'Rp ' . number_format($totalInventoryValue, 0, ',', '.'))
                 ->description('Total modal yang jadi stok di gudang')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->chart([7, 10, 8, 12, 15, 14, 18])
@@ -34,7 +34,7 @@ class ProductStatsOverview extends BaseWidget
                 ]),
 
             Stat::make('Isi Gudang Sekarang', number_format($totalStockUnits, 0, ',', '.') . ' Pcs')
-                ->description('Gabungan semua unit barang yang ada')
+                ->description('Gabungan semua unit produk yang ada')
                 ->descriptionIcon('heroicon-m-circle-stack')
                 ->chart([15, 12, 17, 14, 20, 18, 22])
                 ->color('info')
@@ -42,7 +42,7 @@ class ProductStatsOverview extends BaseWidget
                     'class' => 'cursor-pointer hover:scale-105 transition-all duration-300 border-b-4 border-cyan-500 shadow-lg hover:shadow-cyan-500/50',
                 ]),
 
-            Stat::make('Koleksi Varian', Product::count() . ' Produk')
+            Stat::make('Koleksi Varian Produk', Product::count() . ' Produk')
                 ->description('Banyaknya jenis SKU aktif')
                 ->descriptionIcon('heroicon-m-cube')
                 ->chart([5, 5, 5, 5, 5, 5, 5])
