@@ -15,7 +15,7 @@ class StockMovementTrendChart extends ApexChartWidget
     protected int | string | array $columnSpan = 'full';
 
     // Default filter diset ke Minggu Ini
-    public ?string $filter = 'week';
+    public ?string $filter = 'last_7_days';
 
     protected function getFilters(): ?array
     {
@@ -119,8 +119,8 @@ class StockMovementTrendChart extends ApexChartWidget
                 ],
             ],
             'series' => [
-                ['name' => 'Barang Masuk (In)', 'data' => $inData],
-                ['name' => 'Barang Keluar (Out)', 'data' => $outData],
+                ['name' => 'Barang Masuk (In)','color' => '#10b981', 'data' => $inData],
+                ['name' => 'Barang Keluar (Out)', 'color' => '#f43f5e', 'data' => $outData],
             ],
             'xaxis' => [
                 'categories' => $categories,
