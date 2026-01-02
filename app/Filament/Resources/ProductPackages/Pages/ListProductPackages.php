@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\ProductPackages\Pages;
 
-use App\Filament\Resources\ProductPackages\ProductPackageResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\ProductPackages\ProductPackageResource;
+use App\Filament\Resources\ProductPackages\Widgets\PackageMarginChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
+use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
+use App\Filament\Resources\ProductPackages\Widgets\PackageProfitNominalChart;
 
 class ListProductPackages extends ListRecords
 {
@@ -26,8 +29,10 @@ class ListProductPackages extends ListRecords
     {
         return [
             ProductPackageStats::class,
+            PackageMarginChart::class,
+            PackageProfitNominalChart::class,
             ProductPriceRangeChart::class,
-            \App\Filament\Resources\ProductPackages\Widgets\ProductPackageActiveChart::class,
+            PackageBottleneckChart::class,
         ];
     }
 }

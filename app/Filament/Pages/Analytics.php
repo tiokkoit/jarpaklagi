@@ -7,7 +7,7 @@ use App\Filament\Resources\Products\Widgets\AbcParetoChart;
 use BackedEnum;
 class Analytics extends Page
 {
-  protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
+  protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
   protected string $view = 'filament.pages.analytics';
 
