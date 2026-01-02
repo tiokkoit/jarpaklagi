@@ -6,20 +6,25 @@ use Carbon\Carbon;
 use App\Models\SalesReport;
 use Filament\Actions\Action;
 use App\Models\ProductPackage;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
 use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SalesReports\SalesReportResource;
+use App\Filament\Resources\SalesReports\Widgets\OrderStatusDonut;
 use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
-use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
+use App\Filament\Resources\SalesReports\Widgets\PaymentMethodDonut;
 use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\DatePicker;
+use App\Filament\Resources\SalesReports\Widgets\RevenueProfitTrendChart;
+use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
+use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
+use App\Filament\Resources\SalesReports\Widgets\GeographicDistributionChart;
 
 class ListSalesReports extends ListRecords
 {
@@ -29,10 +34,11 @@ class ListSalesReports extends ListRecords
     {
         return [
             SalesReportStatsOverview::class,
-            RevenueAnalyticsChart::class,
-            \App\Filament\Resources\SalesReports\Widgets\ProfitTrendChart::class, // New
-            SalesRevenueChart::class,
-            PaymentMethodChart::class,
+            RevenueProfitTrendChart::class,
+            PaymentMethodDonut::class,
+            OrderStatusDonut::class,
+            ProvinceDistributionChart::class, // New
+            GeographicDistributionChart::class,
         ];
     }
 

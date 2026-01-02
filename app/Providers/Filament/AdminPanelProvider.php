@@ -80,32 +80,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                    // Row 1: Global Strategic Overview
-                DashboardStatsOverview::class,
-                ProfitLossOverview::class, // New Financial Intel
-
-                    // Row 2: Financial & Activity Trends
-                RevenueAnalyticsChart::class,
-
-                    // Row 3: Product & Customer Intelligence
-                TopSellingProductsChart::class,
-                CustomerGeographyChart::class, // New Customer Intel
-
-                    // Row 4: Detailed Resource Stats
-                OrderStatsOverview::class,
-                SalesReportStatsOverview::class,
-                StockMovementStats::class,
-                ProductStatsOverview::class,
-                ProductPackageStats::class,
-
-                    // Row 5: Granular/Specific Charts
-                OrderStatusChart::class,
-                SalesRevenueChart::class,
-                PaymentMethodChart::class,
-                StockActivityChart::class,
-                ProductPriceRangeChart::class,
-            ])
+            
             ->plugins([
                 FilamentApexChartsPlugin::make()
             ])
