@@ -26,4 +26,13 @@ class ListUsers extends ListRecords
       \App\Filament\Resources\UserResource\Widgets\UserRoleChart::class,
     ];
   }
+
+  public function getColumns(): int | string | array
+  {
+      return [
+          'default' => 1,
+          'sm' => 2,
+          'lg' => 12, // Kita gunakan sistem 12 kolom agar lebih fleksibel
+      ];
+  }
 }

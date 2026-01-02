@@ -8,6 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class UserStatsOverview extends BaseWidget
 {
+    protected int | string | array $columnSpan = 'full';
     protected function getStats(): array
     {
         return [
