@@ -110,9 +110,9 @@ class StockMovementStats extends BaseWidget
                 ]),
 
             // KARTU 6: INVENTORY RECORD ACCURACY
-            Stat::make('Akurasi Catatan Inventaris (IRA)', $accuracyRate . '%')
+            Stat::make('Akurasi Catatan Inventaris', $accuracyRate . '%')
                 ->description('Tingkat akurasi catatan stok bulan ini')
-                ->descriptionIcon('heroicon-s-shield-check')
+                ->descriptionIcon('heroicon-s-receipt-percent')
                 ->color($accuracyRate >= 95 ? 'success' : ($accuracyRate >= 85 ? 'warning' : 'danger'))
                 ->extraAttributes([
                     'class' => 'cursor-pointer hover:scale-105 transition-all duration-300 border-b-4 border-blue-500 shadow-sm hover:shadow-blue-500/50',
