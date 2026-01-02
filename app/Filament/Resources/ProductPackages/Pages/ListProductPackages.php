@@ -9,6 +9,7 @@ use App\Filament\Resources\ProductPackages\Widgets\PackageMarginChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
 use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
 use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
+use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
 use App\Filament\Resources\ProductPackages\Widgets\PackageProfitNominalChart;
 
 class ListProductPackages extends ListRecords
@@ -33,6 +34,7 @@ class ListProductPackages extends ListRecords
             PackageProfitNominalChart::class,
             ProductPriceRangeChart::class,
             PackageBottleneckChart::class,
+            PackageCostStructureChart::class,
         ];
     }
 }

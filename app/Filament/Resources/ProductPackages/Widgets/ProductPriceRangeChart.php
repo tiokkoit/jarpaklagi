@@ -9,7 +9,7 @@ class ProductPriceRangeChart extends ApexChartWidget
 {
   protected static ?string $chartId = 'productPriceRangeChart';
   protected static ?string $heading = 'Distribusi Harga Paket Produk';
-  protected static ?int $sort = 3;
+  protected int | string | array $columnSpan = 'full';
 
   protected function getOptions(): array
   {

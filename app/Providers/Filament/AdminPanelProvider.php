@@ -30,7 +30,6 @@ use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
 use App\Filament\Resources\Products\Widgets\ProductStockChart;
 use App\Filament\Resources\Products\Widgets\ProductValueChart;
-use App\Filament\Resources\ProductPackages\Widgets\ProductPackageActiveChart;
 
 // Widgets - Charts (New)
 use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
@@ -107,7 +106,6 @@ class AdminPanelProvider extends PanelProvider
                 PaymentMethodChart::class,
                 StockActivityChart::class,
                 ProductPriceRangeChart::class,
-                ProductPackageActiveChart::class,
             ])
             ->plugins([
                 FilamentApexChartsPlugin::make()
