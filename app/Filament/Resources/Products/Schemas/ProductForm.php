@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\FileUpload;
@@ -13,54 +15,73 @@ class ProductForm
     {
         return $schema
             ->components([
-                Section::make('Informasi Produk Dasar') // ✅ Mengelompokkan field
-                    ->columns(2) // ✅ Layout 2 kolom
+                // SECTION 1: INFO BARANG
+                Section::make('Identitas Produk')
+                    ->description('Atur kode SKU dan nama produk.')
+                    ->icon('heroicon-m-identification')
+                    ->collapsible()
                     ->schema([
-                        TextInput::make('code')
-                            ->label('Kode Produk') // ✅ Label lebih user-friendly
-                            ->unique(ignoreRecord: true)
-                            ->required()
-                            ->maxLength(50)
-                            ->autofocus(), // ✅ Tambahkan autofokus
-                        
-                        TextInput::make('name')
-                            ->label('Nama Produk') // ✅ Label lebih deskriptif
-                            ->unique(ignoreRecord: true)
-                            ->required()
-                            ->maxLength(255),
+                        Grid::make(2)->schema([
+                            TextInput::make('code')
+                                ->label('Kode SKU')
+                                ->placeholder('Contoh: MOE01')
+                                ->unique(ignoreRecord: true)
+                                ->required()
+                                ->maxLength(50)
+                                ->autofocus()
+                                ->helperText('Kode unik untuk tracking produk.'),
+                            
+                            TextInput::make('name')
+                                ->label('Nama Produk')
+                                ->placeholder('Contoh: Moera Infusion')
+                                ->unique(ignoreRecord: true)
+                                ->required()
+                                ->maxLength(255),
+                        ]),
                     ]),
 
-                Section::make('Harga Pokok Produksi dan Stok')
-                    ->columns(2)
+                // SECTION 2: MODAL & STOK
+                Section::make('Modal & Stok Awal')
+                    ->description('Isi harga modal (HPP) dan jumlah produk yang masuk pertama kali ke sistem.')
+                    ->icon('heroicon-m-banknotes')
                     ->schema([
-                        TextInput::make('hpp')
-                            ->label('Harga Pokok Penjualan (HPP)')
-                            ->numeric()
-                            ->prefix('Rp') // ✅ Prefix mata uang
-                            ->required(),
-                        
-                        // ✅ Perbaikan Logika Stok Awal
-                        TextInput::make('stock')
-                            ->label('Stok Awal')
-                            ->numeric()
-                            ->minValue(0) // ✅ Minimal 0
-                            ->default(0)
-                            ->required(fn (string $operation): bool => $operation === 'create') // ✅ Wajib saat Create
-                            ->hiddenOn('edit') // ✅ Sembunyikan saat Edit (stok diurus oleh Movement)
-                            ->helperText('Hanya diisi saat membuat produk baru. Stok selanjutnya diatur melalui mutasi.'), // ✅ Bantuan yang jelas
+                        Grid::make(2)->schema([
+                            TextInput::make('hpp')
+                                ->label('Harga Modal (HPP)')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->placeholder('0')
+                                ->extraInputAttributes(['class' => 'font-bold text-lg'])
+                                ->required()
+                                ->helperText('Harga modal per unit produk.'),
+                            
+                            TextInput::make('stock')
+                                ->label('Stok Awal')
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
+                                ->prefix('Qty')
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->hiddenOn('edit')
+                                ->extraInputAttributes(['class' => 'text-primary-600 font-bold'])
+                                ->helperText('Hanya diisi saat daftar produk baru.'),
+                        ]),
                     ]),
 
-                Section::make('Gambar Produk')
+                // SECTION 3: FOTO
+                Section::make('Foto Produk')
+                    ->description('Upload foto produk agar visual di dashboard dan laporan lebih jelas.')
+                    ->icon('heroicon-m-photo')
                     ->schema([
                         FileUpload::make('image')
-                            ->label('Unggah Gambar Produk')
+                            ->hiddenLabel()
                             ->image()
                             ->directory('products')
-                            ->maxSize(2048)
-                            ->required()
-                            ->imageResizeMode('cover') // ✅ Opsional: Atur mode resize
-                            ->imageCropAspectRatio('1:1') // ✅ Opsional: Atur rasio foto
-                            ->columnSpanFull(), // ✅ Gambar tampil full width
+                            ->imageEditor()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('1:1')
+                            ->imagePreviewHeight('250') 
+                            ->required(),
                     ]),
             ]);
     }

@@ -2,89 +2,104 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn; // ✅ Tambahkan ini untuk visual status
+use App\Models\Product;
 use Filament\Tables\Table;
-use App\Models\Product; // ✅ Pastikan Model Product di-import
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn; 
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 class ProductsTable
 {
-    // Tetap menggunakan configure(Table $table)
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
+                // KODE PRODUK
                 TextColumn::make('code')
-                    ->label('Kode Produk') // ✅ Label lebih lengkap
+                    ->label('Kode SKU')
                     ->searchable()
                     ->badge()
                     ->color('info')
                     ->copyable()
                     ->sortable(),
                     
+                // NAMA PRODUK
                 TextColumn::make('name')
                     ->label('Nama Produk')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(), // Agar nama panjang tidak memotong tabel
                 
-                // ✅ STOK: Tambahkan warna dan weight
+                // STOK: Sesuai Logika Inventory (SCM/OR2)
                 TextColumn::make('stock')
-                    ->label('Stok Saat Ini')
+                    ->label('Stok Produk')
                     ->numeric()
                     ->sortable()
-                    ->weight('bold') // Tebalkan
+                    ->weight('bold')
+                    ->alignment('center')
                     ->color(fn (int $state): string => match (true) {
-                        $state === 0 => 'danger', // Merah jika habis
-                        $state <= 10 => 'warning', // Kuning jika menipis (threshold bisa diubah)
-                        default => 'success', // Hijau jika aman
+                        $state < 100 => 'danger',   // KRITIS: Merah
+                        $state <= 400 => 'warning', // WASPADA: Kuning
+                        default => 'success',       // AMAN: Hijau
+                    })
+                    ->description(fn (int $state): string => match (true) {
+                        $state < 100 => 'Segera Restock!',
+                        $state <= 400 => 'Pantau Ketat',
+                        default => 'Stok Terjamin',
                     }),
 
-                // ✅ STATUS STOK: Tambahkan Ikon Visual (User Friendly)
+                // STATUS VISUAL: Indikator Kondisi Persediaan
                 IconColumn::make('stock_status')
-                    ->label('Status')
-                    ->tooltip(fn (Product $record) => $record->stock <= 10 ? 'Stok Kritis' : 'Stok Aman')
-                    ->getStateUsing(fn (Product $record): string => $record->stock <= 10 ? 'critical' : 'safe')
+                    ->label('Kondisi')
+                    ->getStateUsing(fn (Product $record): string => match (true) {
+                        $record->stock < 100 => 'kritis',
+                        $record->stock <= 400 => 'waspada',
+                        default => 'aman',
+                    })
                     ->icon(fn (string $state): string => match ($state) {
-                        'critical' => 'heroicon-o-exclamation-triangle',
-                        'safe' => 'heroicon-o-check-circle',
-                        default => 'heroicon-o-information-circle',
+                        'kritis' => 'heroicon-o-fire',             // Simbol gawat
+                        'waspada' => 'heroicon-o-exclamation-circle', // Simbol peringatan
+                        'aman' => 'heroicon-o-check-badge',         // Simbol oke
+                        default => 'heroicon-o-question-mark-circle',
                     })
                     ->color(fn (string $state): string => match ($state) {
-                        'critical' => 'warning',
-                        'safe' => 'success',
+                        'kritis' => 'danger',
+                        'waspada' => 'warning',
+                        'aman' => 'success',
                         default => 'gray',
                     })
-                    ->toggleable(isToggledHiddenByDefault: false), // ✅ Selalu tampil
+                    ->tooltip(fn (Product $record) => match (true) {
+                        $record->stock < 100 => 'Gawat! Di bawah Safety Stock',
+                        $record->stock <= 400 => 'Waspada! Masuk area Reorder Point',
+                        default => 'Aman! Stok mencukupi',
+                    }),
 
+                // HPP (Kewirausahaan)
                 TextColumn::make('hpp')
-                    ->label('HPP')
+                    ->label('Nilai Modal(HPP)')
                     ->numeric()
                     ->sortable()
-                    ->money('IDR'), // ✅ Format mata uang yang konsisten
+                    ->money('IDR'), 
 
+                // GAMBAR PRODUK
                 ImageColumn::make('image')
                     ->disk('public')
                     ->label('Gambar')
-                    ->square() // ✅ Tampilkan gambar kotak
-                    ->size(50), // ✅ Atur ukuran agar tidak terlalu besar
+                    ->circular() // Biar lebih modern
+                    ->size(40),
 
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                    
+                // METADATA (Manajemen Proyek)
                 TextColumn::make('updated_at')
-                    ->label('Diperbarui')
-                    ->dateTime('d M Y')
+                    ->label('Update Terakhir')
+                    ->dateTime('d M Y, H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Bisa ditambahkan filter berdasarkan status stok nantinya
             ])
             ->recordActions([
                 EditAction::make(),

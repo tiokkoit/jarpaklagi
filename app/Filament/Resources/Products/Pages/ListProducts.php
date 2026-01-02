@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
-use App\Filament\Resources\Products\ProductResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
+use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Products\Widgets\AbcParetoChart;
+use App\Filament\Resources\Products\Widgets\StockLevelChart;
+use App\Filament\Resources\Products\Widgets\StockHealthChart;
 use App\Filament\Resources\Products\Widgets\ProductStockChart;
+use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
 
 class ListProducts extends ListRecords
 {
@@ -26,9 +29,9 @@ class ListProducts extends ListRecords
     {
         return [
             ProductStatsOverview::class,
-            \App\Filament\Resources\Products\Widgets\InventoryHealthStats::class, // New
-            ProductStockChart::class,
-            \App\Filament\Resources\Products\Widgets\ProductValueChart::class,
+            AbcParetoChart::class,
+            StockHealthChart::class,
+            StockLevelChart::class,
         ];
     }
 }

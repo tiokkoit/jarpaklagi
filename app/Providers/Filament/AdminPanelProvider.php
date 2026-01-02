@@ -74,6 +74,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->brandLogoHeight(fn() => auth()->user() ? '3rem' : '8rem')
             ->topNavigation()
+            ->breadcrumbs(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -105,8 +106,6 @@ class AdminPanelProvider extends PanelProvider
                 SalesRevenueChart::class,
                 PaymentMethodChart::class,
                 StockActivityChart::class,
-                ProductStockChart::class,
-                ProductValueChart::class,
                 ProductPriceRangeChart::class,
                 ProductPackageActiveChart::class,
             ])
