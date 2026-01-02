@@ -6,6 +6,8 @@ use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
 use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
 use Filament\Pages\Page;
 use App\Filament\Resources\Products\Widgets\AbcParetoChart;
+use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
+use App\Filament\Resources\Products\Widgets\StockLevelChart;
 use BackedEnum;
 class Analytics extends Page
 {
@@ -25,6 +27,8 @@ class Analytics extends Page
       AbcParetoChart::class,
       PackageBottleneckChart::class,
       PackageCostStructureChart::class,
+      StockMovementTrendChart::class,
+      StockLevelChart::class,
     ];
   }
 }

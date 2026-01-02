@@ -31,7 +31,6 @@ class ListStockMovements extends ListRecords
     {
         return [
             StockMovementStats::class,
-            StockMovementTrendChart::class,
             MovementReasonChart::class,
             TopActiveSkuChart::class,
         ];

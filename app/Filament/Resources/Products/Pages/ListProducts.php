@@ -32,7 +32,6 @@ class ListProducts extends ListRecords
         return [
             ProductStatsOverview::class,
             StockHealthChart::class,
-            StockLevelChart::class,
             ProductValueChart::class,
             ProductHppChart::class,
         ];
