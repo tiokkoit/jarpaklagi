@@ -6,9 +6,9 @@ use App\Models\StockMovement;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use App\Filament\Resources\StockMovements\StockMovementResource;
+use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
-use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 
 
 class ListStockMovements extends ListRecords
