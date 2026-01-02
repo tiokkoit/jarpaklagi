@@ -55,7 +55,7 @@ class ListOrders extends ListRecords
     {
         return [
             OrderStatsOverview::class,
-            OperationalEfficiencyStats::class, // New
+            #OperationalEfficiencyStats::class, // New
             OrdersTrendsChart::class,
             OrderPeakTimeChart::class, // New
             OrderStatusChart::class,
