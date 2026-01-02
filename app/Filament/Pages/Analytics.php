@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
 use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
+use App\Filament\Resources\SalesReports\Widgets\GeographicDistributionChart;
+use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
 use Filament\Pages\Page;
 use App\Filament\Resources\Products\Widgets\AbcParetoChart;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
@@ -29,6 +31,8 @@ class Analytics extends Page
       PackageCostStructureChart::class,
       StockMovementTrendChart::class,
       StockLevelChart::class,
+      ProvinceDistributionChart::class,
+      GeographicDistributionChart::class,
     ];
   }
 }

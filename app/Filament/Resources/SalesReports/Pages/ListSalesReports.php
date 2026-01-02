@@ -20,7 +20,10 @@ use App\Filament\Resources\SalesReports\Widgets\OrderStatusDonut;
 use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodDonut;
+use App\Filament\Resources\SalesReports\Widgets\ProductParetoChart;
 use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
+use App\Filament\Resources\SalesReports\Widgets\CustomerRetentionChart;
+use App\Filament\Resources\SalesReports\Widgets\ProductPerformanceChart;
 use App\Filament\Resources\SalesReports\Widgets\RevenueProfitTrendChart;
 use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
 use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
@@ -37,8 +40,9 @@ class ListSalesReports extends ListRecords
             RevenueProfitTrendChart::class,
             PaymentMethodDonut::class,
             OrderStatusDonut::class,
-            ProvinceDistributionChart::class, // New
-            GeographicDistributionChart::class,
+            ProductPerformanceChart::class,
+            ProductParetoChart::class,
+            CustomerRetentionChart::class,
         ];
     }
 
