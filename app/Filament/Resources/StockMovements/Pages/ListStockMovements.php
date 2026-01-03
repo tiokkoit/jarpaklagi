@@ -7,10 +7,8 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use App\Filament\Resources\StockMovements\StockMovementResource;
 use App\Filament\Resources\StockMovements\Widgets\TopActiveSkuChart;
-use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
 use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
 use App\Filament\Resources\StockMovements\Widgets\MovementReasonChart;
-use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
 
 
 class ListStockMovements extends ListRecords
