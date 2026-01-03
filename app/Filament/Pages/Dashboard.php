@@ -24,6 +24,7 @@ use App\Filament\Resources\ProductPackages\Widgets\PackageProfitNominalChart;
 
 class Dashboard extends BaseDashboard
 {
+  protected static ?string $title = 'Dashboard StockkuApp';
   public function getWidgets(): array
   {
     return [

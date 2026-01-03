@@ -44,7 +44,7 @@ class AdminPanelProvider extends PanelProvider
                 '<script>document.documentElement.classList.add("dark");</script>'
                 : ''
             )
-            ->brandLogoHeight(fn() => auth()->user() ? '3rem' : '8rem')
+            ->brandLogoHeight(fn() => auth()->user() ? '5rem' : '8rem')
             ->breadcrumbs(false)
             ->sidebarCollapsibleOnDesktop()
             ->topbar(false)
