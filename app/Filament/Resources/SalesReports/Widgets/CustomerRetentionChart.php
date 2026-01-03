@@ -88,6 +88,8 @@ class CustomerRetentionChart extends ApexChartWidget
             'subtitle' => [
                 'text' => 'Trend pertumbuhan pelanggan baru vs loyalitas pelanggan lama',
                 'align' => 'left',
+                'margin' => 0,
+                'offsetY' => 0,
                 'style' => ['color' => '#64748b'],
             ],
         ];

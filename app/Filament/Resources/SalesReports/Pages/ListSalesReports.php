@@ -17,17 +17,10 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SalesReports\SalesReportResource;
 use App\Filament\Resources\SalesReports\Widgets\OrderStatusDonut;
-use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
-use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
 use App\Filament\Resources\SalesReports\Widgets\PaymentMethodDonut;
-use App\Filament\Resources\SalesReports\Widgets\ProductParetoChart;
-use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
-use App\Filament\Resources\SalesReports\Widgets\CustomerRetentionChart;
-use App\Filament\Resources\SalesReports\Widgets\ProductPerformanceChart;
 use App\Filament\Resources\SalesReports\Widgets\RevenueProfitTrendChart;
 use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
-use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
-use App\Filament\Resources\SalesReports\Widgets\GeographicDistributionChart;
+
 
 class ListSalesReports extends ListRecords
 {
@@ -40,9 +33,6 @@ class ListSalesReports extends ListRecords
             RevenueProfitTrendChart::class,
             PaymentMethodDonut::class,
             OrderStatusDonut::class,
-            ProductPerformanceChart::class,
-            ProductParetoChart::class,
-            CustomerRetentionChart::class,
         ];
     }
 

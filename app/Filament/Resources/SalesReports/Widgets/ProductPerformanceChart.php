@@ -103,7 +103,7 @@ class ProductPerformanceChart extends ApexChartWidget
                 'text' => 'Perbandingan performa finansial antar paket produk Moringa',
                 'align' => 'left',
                 'margin' => 0,
-                'offsetY' => -10,
+                'offsetY' => 0,
                 'style' => ['color' => '#94a3b8', 'fontSize' => '12px'],
             ],
             'tooltip' => [

@@ -2,15 +2,19 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
-use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
-use App\Filament\Resources\SalesReports\Widgets\GeographicDistributionChart;
-use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
+use BackedEnum;
 use Filament\Pages\Page;
 use App\Filament\Resources\Products\Widgets\AbcParetoChart;
-use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
 use App\Filament\Resources\Products\Widgets\StockLevelChart;
-use BackedEnum;
+use App\Filament\Resources\SalesReports\Widgets\ProductParetoChart;
+use App\Filament\Resources\SalesReports\Widgets\CustomerRetentionChart;
+use App\Filament\Resources\SalesReports\Widgets\ProductPerformanceChart;
+use App\Filament\Resources\ProductPackages\Widgets\PackageBottleneckChart;
+use App\Filament\Resources\SalesReports\Widgets\ProvinceDistributionChart;
+use App\Filament\Resources\StockMovements\Widgets\StockMovementTrendChart;
+use App\Filament\Resources\SalesReports\Widgets\GeographicDistributionChart;
+use App\Filament\Resources\ProductPackages\Widgets\PackageCostStructureChart;
+
 class Analytics extends Page
 {
   protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
@@ -27,10 +31,13 @@ class Analytics extends Page
   {
     return [
       AbcParetoChart::class,
+      StockLevelChart::class,
       PackageBottleneckChart::class,
       PackageCostStructureChart::class,
       StockMovementTrendChart::class,
-      StockLevelChart::class,
+      ProductPerformanceChart::class,
+      ProductParetoChart::class,
+      CustomerRetentionChart::class,
       ProvinceDistributionChart::class,
       GeographicDistributionChart::class,
     ];

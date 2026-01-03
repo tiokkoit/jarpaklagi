@@ -6,7 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -16,33 +16,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-
-// Widgets - Stats Overview
-use App\Filament\Resources\Orders\Widgets\OrderStatsOverview;
-use App\Filament\Resources\SalesReports\Widgets\SalesReportStatsOverview;
-use App\Filament\Resources\StockMovements\Widgets\StockMovementStats;
-use App\Filament\Resources\Products\Widgets\ProductStatsOverview;
-use App\Filament\Resources\ProductPackages\Widgets\ProductPackageStats;
-
-// Widgets - Charts (Existing)
-use App\Filament\Resources\Orders\Widgets\OrderStatusChart;
-use App\Filament\Resources\SalesReports\Widgets\SalesRevenueChart;
-use App\Filament\Resources\SalesReports\Widgets\PaymentMethodChart;
-use App\Filament\Resources\Products\Widgets\ProductStockChart;
-use App\Filament\Resources\Products\Widgets\ProductValueChart;
-
-// Widgets - Charts (New)
-use App\Filament\Resources\Orders\Widgets\OrdersTrendsChart;
-use App\Filament\Resources\SalesReports\Widgets\RevenueAnalyticsChart;
-use App\Filament\Resources\ProductPackages\Widgets\ProductPriceRangeChart;
-use App\Filament\Resources\StockMovements\Widgets\StockActivityChart;
-
-// New Dashboard Widgets
-use App\Filament\Widgets\DashboardStatsOverview;
-use App\Filament\Widgets\TopSellingProductsChart;
-use App\Filament\Widgets\ProfitLossOverview;
-use App\Filament\Widgets\CustomerGeographyChart;
-
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -80,7 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            
+
             ->plugins([
                 FilamentApexChartsPlugin::make()
             ])

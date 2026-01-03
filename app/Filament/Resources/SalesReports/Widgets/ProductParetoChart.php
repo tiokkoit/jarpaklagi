@@ -94,7 +94,9 @@ class ProductParetoChart extends ApexChartWidget
             'markers' => ['size' => 6],
             'subtitle' => [
                 'text' => 'Prinsip 80/20: Identifikasi paket produk penyumbang omset terbesar',
-                'align' => 'left',
+                'align' => 'right',
+                'margin' => 0,
+                'offsetY' => 0,
                 'style' => ['color' => '#64748b'],
             ],
         ];
