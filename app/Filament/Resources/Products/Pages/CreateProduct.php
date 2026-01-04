@@ -12,4 +12,15 @@ class CreateProduct extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function getCreatedNotification(): ?\Filament\Notifications\Notification
+    {
+        return \Filament\Notifications\Notification::make()
+            ->success()
+            ->icon('heroicon-o-plus-circle') // Icon tambah
+            ->title('Produk Berhasil Didaftarkan')
+            // Kita bisa ambil nama produk yang baru dibuat secara dinamis
+            ->body("**{$this->record->name}** kini telah tersimpan ke sistem StockkuApp.")
+            ->send();
+    }
 }
