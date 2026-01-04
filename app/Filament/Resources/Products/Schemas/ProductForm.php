@@ -27,6 +27,10 @@ class ProductForm
                                 ->placeholder('Contoh: MOE01')
                                 ->unique(ignoreRecord: true)
                                 ->required()
+                                ->validationMessages([
+                                    'required' => 'Kode SKU wajib diisi agar produk bisa dilacak.',
+                                    'unique' => 'Kode SKU ini sudah terdaftar, silakan gunakan kode lain.',
+                                ])
                                 ->maxLength(50)
                                 ->autofocus()
                                 ->helperText('Kode unik untuk tracking produk.'),
@@ -36,6 +40,10 @@ class ProductForm
                                 ->placeholder('Contoh: Moera Infusion')
                                 ->unique(ignoreRecord: true)
                                 ->required()
+                                ->validationMessages([
+                                    'required' => 'Nama produk tidak boleh kosong.',
+                                    'unique' => 'Nama produk ini sudah ada, silakan gunakan nama lain.',
+                                ])
                                 ->maxLength(255),
                         ]),
                     ]),
@@ -53,6 +61,9 @@ class ProductForm
                                 ->placeholder('0')
                                 ->extraInputAttributes(['class' => 'font-bold text-lg'])
                                 ->required()
+                                ->validationMessages([
+                                    'required' => 'Harga modal wajib diisi.',
+                                ])
                                 ->helperText('Harga modal per unit produk.'),
                             
                             TextInput::make('stock')
@@ -81,7 +92,10 @@ class ProductForm
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('1:1')
                             ->imagePreviewHeight('250') 
-                            ->required(),
+                            ->required()
+                            ->validationMessages([
+                                'required' => 'Foto produk wajib diupload untuk identifikasi visual.',
+                            ])
                     ]),
             ]);
     }

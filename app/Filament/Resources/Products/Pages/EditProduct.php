@@ -17,7 +17,13 @@ class EditProduct extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus Produk')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Hapus Produk')
+                ->modalSubheading('Tindakan ini tidak dapat dibatalkan. Yakin ingin menghapus produk ini?')
+                ->modalButton('Ya, Hapus'),
         ];
     }
 }

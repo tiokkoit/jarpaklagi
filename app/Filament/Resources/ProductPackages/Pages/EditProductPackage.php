@@ -24,21 +24,29 @@ class EditProductPackage extends EditRecord
         ];
     }
 
+    /**
+     * Mempersiapkan data sebelum form ditampilkan (Edit Mode)
+     */
     protected function mutateFormDataBeforeFill(array $data): array
     {
         if (isset($data['name'], $data['product_id'])) {
             $product = Product::find($data['product_id']);
 
             if ($product) {
-                // Hapus prefix nama & kode
+                // Memisahkan prefix nama & kode agar user hanya melihat 'suffix'-nya saja di input
+                // Contoh: 'Moringa Paket 1' menjadi 'Paket 1'
                 $data['name_suffix'] = str_replace($product->name . ' ', '', $data['name']);
+                
+                // Contoh: 'MOE-PC01' menjadi 'PC01'
                 $data['code_suffix'] = str_replace($product->code . '-', '', $data['code']);
             }
         }
 
-        // Tambahkan ID untuk validasi (agar update tidak dianggap duplikat)
-        $data['id'] = $data['id'] ?? $this->record->id;
-
         return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }
