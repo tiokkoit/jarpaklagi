@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
-use App\Filament\Resources\Products\ProductResource;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Products\ProductResource;
 
 class CreateProduct extends CreateRecord
 {
@@ -13,9 +14,9 @@ class CreateProduct extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function getCreatedNotification(): ?\Filament\Notifications\Notification
+    protected function getCreatedNotification(): ?Notification
     {
-        return \Filament\Notifications\Notification::make()
+        return Notification::make()
             ->success()
             ->icon('heroicon-o-plus-circle') // Icon tambah
             ->title('Produk Berhasil Didaftarkan')

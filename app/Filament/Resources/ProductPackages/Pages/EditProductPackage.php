@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProductPackages\Pages;
 
 use Filament\Actions;
 use App\Models\Product;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\ProductPackages\ProductPackageResource;
@@ -26,7 +27,7 @@ class EditProductPackage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->label('Hapus Paket')
                 ->color('danger')
                 ->requiresConfirmation()

@@ -61,7 +61,6 @@ public function getReasonTextAttribute(): string
         // IN
         'restock' => 'Restock',
         'return_from_order' => 'Return Order',
-        'return_from_damage' => 'Return Damage',
         'adjustment_in' => 'Adjustment In',
         'initial_stock' => 'Initial Stock',
         

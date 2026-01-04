@@ -3,92 +3,127 @@
 namespace App\Filament\Resources\StockMovements\Schemas;
 
 use App\Models\Product;
+use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Utilities\Get;
 
 class StockMovementForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(1)
+            ->columns([
+                'default' => 1,
+                'lg' => 3, // Menggunakan sistem 3 kolom
+            ])
             ->components([
-                Section::make('Movement Data')
-                    ->description('Isi detail pergerakan stok dengan lengkap.')
-                    ->icon('heroicon-o-arrow-path')
-                    ->columns(2)
-                    ->schema([
-                        // === Select Product ===
-                        Select::make('product_id')
-                            ->label('Product')
-                            ->options(fn () => Product::pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->hint('Pilih produk yang akan diubah stoknya'),
+                
+                // --- KOLOM KIRI (UTAMA) ---
+                Group::make([
+                    Section::make('Detail Pergerakan Stok')
+                        ->description('Pilih jenis pergerakan stok yang terjadi.')
+                        ->icon('heroicon-m-arrows-right-left')
+                        ->schema([
+                            
+                            // Baris 1: Produk (Full Width di dalam Section)
+                            Select::make('product_id')
+                                ->label('Pilih Produk')
+                                ->relationship('product', 'name')
+                                ->searchable()
+                                ->preload()
+                                ->required()
+                                ->columnSpanFull()
+                                ->hint('Produk yang akan diproses')
+                                ->validationMessages([
+                                    'required' => 'Pilih produk yang akan diproses pergerakan stoknya.',
+                                ]),
 
-                        // === Select Type (IN / OUT) ===
-                        Select::make('type')
-                            ->label('Movement Type')
-                            ->options([
-                                'in' => 'Stock In',
-                                'out' => 'Stock Out',
-                            ])
-                            ->required()
-                            ->native(false)
-                            ->reactive()
-                            ->hint('Pilih jenis pergerakan stok'),
+                            // Baris 2: Tipe & Alasan (Berdampingan)
+                            Grid::make(2)->schema([
+                                Select::make('type')
+                                    ->label('Tipe Pergerakan')
+                                    ->options([
+                                        'in' => '🟢 Stok Masuk (In)',
+                                        'out' => '🔴 Stok Keluar (Out)',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->live() // Gunakan live() agar alasan langsung ter-update
+                                    ->validationMessages([
+                                        'required' => 'Pilih jenis pergerakan (Masuk/Keluar).',
+                                    ]),
 
-                        // === Select Reason (Dynamic) ===
-                        Select::make('reason')
-                            ->label('Reason')
-                            ->options(function (callable $get) {
-                                $type = $get('type');
+                                Select::make('reason')
+                                    ->label('Alasan / Keterangan')
+                                    ->options(function (Get $get) {
+                                        $type = $get('type');
+                                        $reasons = [
+                                            'in' => [
+                                                'restock' => 'Restock / Produksi',
+                                                'adjustment_in' => 'Penyesuaian (Lebih)',
+                                            ],
+                                            'out' => [
+                                                'damaged' => 'Barang Rusak',
+                                                'expired' => 'Kadaluwarsa',
+                                                'lost' => 'Hilang',
+                                                'sample' => 'Pemberian Sample',
+                                                'adjustment_out' => 'Penyesuaian (Kurang)',
+                                            ],
+                                        ];
+                                        return $type ? $reasons[$type] : [];
+                                    })
+                                    ->required()
+                                    ->native(false)
+                                    ->disabled(fn (Get $get) => blank($get('type')))
+                                    ->hintIcon('heroicon-m-question-mark-circle')
+                                    ->validationMessages([
+                                        'required' => 'Pilih alasan pergerakan stok.',
+                                    ]),
+                            ]),
 
-                                $reasons = [
-                                    'in' => [
-                                        'initial_stock' => 'Initial Stock',
-                                        'restock' => 'Restock',
-                                        'return_from_order' => 'Return from Order',
-                                        'adjustment_in' => 'Adjustment In',
-                                    ],
-                                    'out' => [
-                                        'order' => 'Order Out',
-                                        'damaged' => 'Damaged',
-                                        'expired' => 'Expired',
-                                        'lost' => 'Lost',
-                                        'sample' => 'Sample',
-                                        'adjustment_out' => 'Adjustment Out',
-                                    ],
-                                ];
+                            // Baris 3: Quantity
+                            TextInput::make('quantity')
+                                ->label('Jumlah Barang')
+                                ->numeric()
+                                ->required()
+                                ->minValue(1)
+                                ->prefix('Qty')
+                                ->suffix('Unit')
+                                ->extraInputAttributes(['class' => 'text-xl font-bold']) // Agar angka terlihat jelas
+                                ->placeholder('Masukan angka...')
+                                ->validationMessages([
+                                    'required' => 'Jumlah produk wajib diisi.',
+                                    'minValue' => 'Minimal pergerakan adalah 1 unit.',
+                                ]),
+                        ]),
+                ])->columnSpan(['lg' => 2]), // Sisi kiri mengambil 2/3 layar
 
-                                return $type ? $reasons[$type] : [];
-                            })
-                            ->required()
-                            ->reactive()
-                            ->disabled(fn (callable $get) => blank($get('type')))
-                            ->native(false)
-                            ->hint('Opsi alasan akan muncul setelah memilih tipe stok'),
+                // --- KOLOM KANAN (SIDEBAR) ---
+                Group::make([
+                    Section::make('Catatan Tambahan')
+                        ->icon('heroicon-m-clipboard-document-list')
+                        ->schema([
+                            Textarea::make('notes')
+                                ->label('Keterangan')
+                                ->placeholder('Contoh: Batch produksi #202, atau nomor nota retur...')
+                                ->rows(5)
+                                ->columnSpanFull(),
+                        ]),
 
-                        // === Quantity Input ===
-                        TextInput::make('quantity')
-                            ->label('Quantity')
-                            ->numeric()
-                            ->required()
-                            ->minValue(1)
-                            ->prefix('Qty')
-                            ->hint('Jumlah barang yang bergerak'),
-
-                        // === Notes ===
-                        Textarea::make('notes')
-                            ->label('Notes')
-                            ->placeholder('Opsional — isi jika ada catatan tambahan, misalnya alasan koreksi.')
-                            ->rows(3)
-                            ->columnSpanFull(),
-                    ]),
+                    Section::make('Informasi')
+                        ->schema([
+                            Placeholder::make('info')
+                                ->hiddenLabel()
+                                ->content('Pastikan data yang diinput sudah sesuai dengan jumlah fisik produk di gudang CV Agrosehat.'),
+                        ])
+                        ->compact(),
+                ])->columnSpan(['lg' => 1]), // Sisi kanan mengambil 1/3 layar
             ]);
     }
 }

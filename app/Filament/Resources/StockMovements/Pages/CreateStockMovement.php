@@ -2,12 +2,23 @@
 
 namespace App\Filament\Resources\StockMovements\Pages;
 
-use App\Filament\Resources\StockMovements\StockMovementResource;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\StockMovements\StockMovementResource;
 
 class CreateStockMovement extends CreateRecord
 {
     protected static string $resource = StockMovementResource::class;
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->icon('heroicon-o-plus-circle') // Icon tambah
+            ->title('Pergerakan Stok Berhasil Dicatat')
+            // Kita bisa ambil nama produk yang baru dibuat secara dinamis
+            ->body("Pergerakan stok untuk **{$this->record->product->name}** kini telah tercatat di sistem StockkuApp.")
+            ->send();
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
