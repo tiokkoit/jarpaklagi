@@ -89,7 +89,7 @@ class StockMovementForm
 
                             // Baris 3: Quantity
                             TextInput::make('quantity')
-                                ->label('Jumlah Barang')
+                                ->label('Jumlah Pergerakan Stok')
                                 ->numeric()
                                 ->required()
                                 ->minValue(1)
