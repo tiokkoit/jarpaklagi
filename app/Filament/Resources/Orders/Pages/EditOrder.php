@@ -22,20 +22,18 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            // 🟢 TOMBOL VALIDATE & KIRIM
+            // Hanya muncul jika status BELUM dikirim/selesai/batal (Status Awal)
             Action::make('validate_and_send')
                 ->label('Validate & Kirim')
                 ->color('success')
+                ->icon('heroicon-m-paper-airplane')
+                ->visible(fn () => !in_array($this->record->status, ['DIKIRIM', 'CANCEL', 'SELESAI', 'DIKEMBALIKAN']))
                 ->action(function () {
                     $order = $this->record;
 
-                    if (in_array($order->status, ['CANCEL','SELESAI','DIKEMBALIKAN'])) {
-                        Notification::make()->warning()->title('Status final tidak bisa diubah.')->send();
-                        return;
-                    }
-
-                    // Hitung berapa pcs yang dibutuhkan (pcs_per_package * quantity)
                     $pkg = $order->productPackage;
-                    if (! $pkg) {
+                    if (!$pkg) {
                         Notification::make()->danger()->title('Paket produk tidak ditemukan.')->send();
                         return;
                     }
@@ -44,52 +42,49 @@ class EditOrder extends EditRecord
                     $productId = $pkg->product_id;
 
                     try {
-                        // coba keluarkan stok
                         StockMovementService::stockOut($productId, 'order', $pcsNeeded, [
                             'reference_type' => Order::class,
                             'reference_id' => $order->id,
                         ]);
 
-                        // jika berhasil, ubah status ke DIKIRIM
                         $order->update(['status' => 'DIKIRIM']);
-                        Notification::make()->success()->title('Order berhasil dikirim, stok dikurangi.')->send();
+                        Notification::make()->success()->title('Order dikirim, stok berkurang.')->send();
                         $this->redirect($this->getResource()::getUrl('index'));
                     } catch (\Exception $e) {
-                        // jika gagal, cancel dan simpan ke sales report
                         $order->update(['status' => 'CANCEL']);
-
-                        SalesReport::create([
-                            'report_date' => now()->toDateString(),
-                            'customer_name' => $order->customer_name,
-                            'customer_address' => $order->customer_address,
-                            'phone' => $order->phone,
-                            'kecamatan' => $order->kecamatan,
-                            'kota' => $order->kota,
-                            'province' => $order->province,
-                            'product_package_id' => $order->product_package_id,
-                            'quantity' => $order->quantity,
-                            'price' => $order->price,
-                            'total_price' => $order->total_price,
-                            'status' => 'CANCEL',
-                            'payment' => $order->payment,
-                        ]);
-
-                        Notification::make()->danger()->title('Stok tidak mencukupi. Order dibatalkan dan dicatat ke Sales Report.')->send();
+                        $this->createSalesReport($order, 'CANCEL');
+                        Notification::make()->danger()->title('Stok tidak mencukupi. Order otomatis dibatalkan.')->send();
                         $this->redirect($this->getResource()::getUrl('index'));
                     }
                 }),
 
+            // 🔴 TOMBOL CANCEL (MANUAL)
+            // Hanya muncul di tahap awal sebelum barang dikirim
+            Action::make('cancel_manual')
+                ->label('Batalkan Pesanan')
+                ->color('danger')
+                ->icon('heroicon-m-x-circle')
+                ->requiresConfirmation()
+                ->visible(fn () => !in_array($this->record->status, ['DIKIRIM', 'CANCEL', 'SELESAI', 'DIKEMBALIKAN']))
+                ->action(function () {
+                    $order = $this->record;
+                    $order->update(['status' => 'CANCEL']);
+                    $this->createSalesReport($order, 'CANCEL');
+                    
+                    Notification::make()->warning()->title('Pesanan telah dibatalkan.')->send();
+                    $this->redirect($this->getResource()::getUrl('index'));
+                }),
+
+            // 🟡 TOMBOL RETURN (KEMBALIKAN)
+            // Hanya muncul jika status sudah DIKIRIM
             Action::make('return_order')
                 ->label('Kembalikan (Return)')
                 ->color('warning')
+                ->icon('heroicon-m-arrow-uturn-left')
                 ->requiresConfirmation()
+                ->visible(fn () => $this->record->status === 'DIKIRIM')
                 ->action(function () {
                     $order = $this->record;
-                    if ($order->status !== 'DIKIRIM') {
-                        Notification::make()->warning()->title('Hanya order yang berstatus DIKIRIM bisa dikembalikan.')->send();
-                        return;
-                    }
-
                     $pkg = $order->productPackage;
                     $pcs = ($pkg->pcs_per_package ?? 0) * (int)$order->quantity;
 
@@ -99,60 +94,63 @@ class EditOrder extends EditRecord
                     ]);
 
                     $order->update(['status' => 'DIKEMBALIKAN']);
+                    $this->createSalesReport($order, 'DIKEMBALIKAN');
 
-                    // store to sales report
-                    SalesReport::create([
-                        'report_date' => now()->toDateString(),
-                        'customer_name' => $order->customer_name,
-                        'customer_address' => $order->customer_address,
-                        'phone' => $order->phone,
-                        'kecamatan' => $order->kecamatan,
-                        'kota' => $order->kota,
-                        'province' => $order->province,
-                        'product_package_id' => $order->product_package_id,
-                        'quantity' => $order->quantity,
-                        'price' => $order->price,
-                        'total_price' => $order->total_price,
-                        'status' => 'DIKEMBALIKAN',
-                        'payment' => $order->payment,
-                    ]);
-
-                    Notification::make()->success()->title('Order dikembalikan dan stok direstorasi.')->send();
+                    Notification::make()->success()->title('Stok berhasil direstorasi.')->send();
                     $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
+            // 🔵 TOMBOL SELESAI
+            // Hanya muncul jika status sudah DIKIRIM
             Action::make('complete')
                 ->label('Selesai')
                 ->color('primary')
+                ->icon('heroicon-m-check-badge')
                 ->requiresConfirmation()
+                ->visible(fn () => $this->record->status === 'DIKIRIM')
                 ->action(function () {
                     $order = $this->record;
-                    if ($order->status !== 'DIKIRIM') {
-                        Notification::make()->warning()->title('Hanya order yang berstatus DIKIRIM bisa diselesaikan.')->send();
-                        return;
-                    }
-
                     $order->update(['status' => 'SELESAI']);
+                    $this->createSalesReport($order, 'SELESAI');
 
-                    SalesReport::create([
-                        'report_date' => now()->toDateString(),
-                        'customer_name' => $order->customer_name,
-                        'customer_address' => $order->customer_address,
-                        'phone' => $order->phone,
-                        'kecamatan' => $order->kecamatan,
-                        'kota' => $order->kota,
-                        'province' => $order->province,
-                        'product_package_id' => $order->product_package_id,
-                        'quantity' => $order->quantity,
-                        'price' => $order->price,
-                        'total_price' => $order->total_price,
-                        'status' => 'SELESAI',
-                        'payment' => $order->payment,
-                    ]);
-
-                    Notification::make()->success()->title('Order selesai dan dicatat ke Sales Report.')->send();
+                    Notification::make()->success()->title('Order SELESAI. Tercatat di Sales Report.')->send();
                     $this->redirect($this->getResource()::getUrl('index'));
                 }),
         ];
+    }
+
+    /**
+     * Helper function untuk mencatat ke Sales Report agar kode tidak duplikat (Clean Code)
+     */
+    protected function createSalesReport(Order $order, string $status): void
+    {
+        SalesReport::create([
+            'report_date' => now()->toDateString(),
+            'customer_name' => $order->customer_name,
+            'customer_address' => $order->customer_address,
+            'phone' => $order->phone,
+            'kecamatan' => $order->kecamatan,
+            'kota' => $order->kota,
+            'province' => $order->province,
+            'product_package_id' => $order->product_package_id,
+            'quantity' => $order->quantity,
+            'price' => $order->price,
+            'total_price' => $order->total_price,
+            'status' => $status,
+            'payment' => $order->payment,
+        ]);
+    }
+
+    // Di EditOrder.php
+    protected function getFormActions(): array
+    {
+        $order = $this->record;
+
+        // Jika status sudah final, jangan tampilkan tombol aksi form (Simpan/Batal)
+        if (in_array($order->status, ['CANCEL', 'SELESAI', 'DIKEMBALIKAN'])) {
+            return [];
+        }
+
+        return parent::getFormActions();
     }
 }
