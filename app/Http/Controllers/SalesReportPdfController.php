@@ -31,6 +31,21 @@ class SalesReportPdfController extends Controller
 
     $reports = $query->get();
 
+    // Summary Logic
+    $totalRevenue = $reports->where('status', 'SELESAI')->sum('total_price');
+    $totalTransactions = $reports->count();
+    $totalCancelled = $reports->where('status', 'CANCEL')->count();
+
+    // Find best selling package
+    $bestSelling = $reports->where('status', 'SELESAI')
+      ->groupBy('product_package_id')
+      ->sortByDesc(function ($group) {
+        return $group->count();
+      })->first();
+
+    $bestSellingName = $bestSelling ? $bestSelling->first()->productPackage->name : '-';
+    $bestSellingCount = $bestSelling ? $bestSelling->count() : 0;
+
     // Prepare date range text
     $dateRange = null;
     if ($startDate && $endDate) {
@@ -42,6 +57,13 @@ class SalesReportPdfController extends Controller
       'reports' => $reports,
       'dateRange' => $dateRange,
       'title' => 'Laporan Penjualan',
+      'summary' => [
+        'total_revenue' => $totalRevenue,
+        'total_transactions' => $totalTransactions,
+        'total_cancelled' => $totalCancelled,
+        'best_selling_product' => $bestSellingName,
+        'best_selling_count' => $bestSellingCount,
+      ]
     ]);
 
     $pdf->setPaper('A4', 'landscape');

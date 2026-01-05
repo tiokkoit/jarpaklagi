@@ -34,6 +34,19 @@ class StockMovementPdfController extends Controller
 
     $movements = $query->get();
 
+    // Summary Statistics
+    $totalIn = $movements->where('type', 'in')->sum('quantity');
+    $totalOut = $movements->where('type', 'out')->sum('quantity');
+
+    // Find most active product
+    $mostActiveProduct = $movements->groupBy('product_id')
+      ->sortByDesc(function ($group) {
+        return $group->count();
+      })->first();
+
+    $mostActiveProductName = $mostActiveProduct ? $mostActiveProduct->first()->product->name : '-';
+    $mostActiveProductCount = $mostActiveProduct ? $mostActiveProduct->count() : 0;
+
     // Prepare date range text
     $dateRange = null;
     if ($startDate && $endDate) {
@@ -45,6 +58,13 @@ class StockMovementPdfController extends Controller
       'movements' => $movements,
       'dateRange' => $dateRange,
       'title' => 'Laporan Mutasi Stok',
+      'summary' => [
+        'total_in' => $totalIn,
+        'total_out' => $totalOut,
+        'most_active_product' => $mostActiveProductName,
+        'most_active_count' => $mostActiveProductCount,
+        'total_transactions' => $movements->count(),
+      ]
     ]);
 
     $pdf->setPaper('A4', 'landscape');

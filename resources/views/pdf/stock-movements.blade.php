@@ -6,6 +6,11 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Laporan Mutasi Stok - {{ $title ?? 'Stock Movement Report' }}</title>
   <style>
+    @font-face {
+      font-family: 'Inter';
+      src: url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -14,132 +19,248 @@
 
     body {
       font-family: 'DejaVu Sans', sans-serif;
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1.4;
-      color: #333;
+      color: #1e293b;
+      padding: 0;
     }
 
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 100px;
+      color: rgba(203, 213, 225, 0.2);
+      z-index: -1;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    /* Header */
     .header {
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #2563eb;
+      width: 100%;
+      border-bottom: 3px solid #0ea5e9;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+      display: table;
     }
 
-    .header h1 {
-      font-size: 18px;
-      color: #2563eb;
+    .logo-container {
+      display: table-cell;
+      width: 20%;
+      vertical-align: middle;
+    }
+
+    .logo {
+      max-height: 60px;
+      width: auto;
+    }
+
+    .company-info {
+      display: table-cell;
+      width: 80%;
+      vertical-align: middle;
+      text-align: right;
+    }
+
+    .company-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0ea5e9;
       margin-bottom: 5px;
+      text-transform: uppercase;
     }
 
-    .header p {
-      font-size: 11px;
-      color: #666;
+    .company-address {
+      font-size: 10px;
+      color: #64748b;
     }
 
-    .meta-info {
-      margin-bottom: 15px;
-      padding: 10px;
+    /* Summary Cards */
+    .summary-grid {
+      display: table;
+      width: 100%;
+      margin-bottom: 25px;
+      border-spacing: 10px 0;
+    }
+
+    .summary-card {
+      display: table-cell;
+      width: 25%;
       background: #f8fafc;
-      border-radius: 5px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
     }
 
-    .meta-info p {
-      margin: 3px 0;
+    .summary-title {
+      font-size: 10px;
+      color: #64748b;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .meta-info strong {
-      color: #2563eb;
+    .summary-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0ea5e9;
     }
 
+    .summary-sub {
+      font-size: 8px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    /* Info Bar */
+    .info-bar {
+      background: #f1f5f9;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0ea5e9;
+      font-size: 10px;
+      color: #334155;
+    }
+
+    .info-bar strong {
+      color: #0f172a;
+    }
+
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     th {
-      background: #2563eb;
-      color: white;
-      padding: 8px 5px;
+      background: #f8fafc;
+      color: #475569;
+      padding: 12px 8px;
       text-align: left;
       font-size: 9px;
+      font-weight: bold;
       text-transform: uppercase;
+      border-bottom: 2px solid #e2e8f0;
+      border-top: 1px solid #e2e8f0;
     }
 
     td {
-      padding: 6px 5px;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 9px;
+      padding: 10px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      color: #334155;
     }
 
     tr:nth-child(even) {
-      background: #f9fafb;
+      background: #fafafa;
     }
 
-    .status {
-      padding: 2px 6px;
-      border-radius: 3px;
+    /* Status Pills */
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 9999px;
       font-size: 8px;
       font-weight: bold;
       text-transform: uppercase;
+      line-height: 1;
     }
 
-    .status-in {
-      background: #dbeafe;
-      color: #1e40af;
+    .pill-in {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    .status-out {
+    .pill-out {
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .summary {
-      margin-top: 20px;
-      padding: 15px;
-      background: #eff6ff;
-      border-radius: 5px;
+    /* Visual Bars */
+    .bar-container {
+      width: 50px;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
     }
 
-    .summary h3 {
-      color: #2563eb;
-      margin-bottom: 10px;
-      font-size: 12px;
+    .bar-fill {
+      height: 100%;
+      background: #0ea5e9;
+      border-radius: 2px;
     }
 
-    .summary-grid {
+    /* Footer */
+    .footer {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+      font-size: 8px;
+      color: #94a3b8;
+    }
+
+    .footer-content {
       display: table;
       width: 100%;
     }
 
-    .summary-item {
+    .footer-left {
       display: table-cell;
-      width: 33%;
-      text-align: center;
-      padding: 8px;
+      width: 50%;
+      text-align: left;
     }
 
-    .summary-item .value {
-      font-size: 14px;
+    .footer-right {
+      display: table-cell;
+      width: 50%;
+      text-align: right;
+    }
+
+    /* Signatures */
+    .signatures {
+      width: 100%;
+      margin-top: 40px;
+      page-break-inside: avoid;
+    }
+
+    .signature-box {
+      width: 33.33%;
+      float: left;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .signature-line {
+      margin-top: 60px;
+      border-top: 1px solid #cbd5e1;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .signature-title {
       font-weight: bold;
-      color: #2563eb;
+      color: #475569;
+      margin-bottom: 5px;
+      font-size: 10px;
     }
 
-    .summary-item .label {
+    .signature-date {
+      color: #94a3b8;
       font-size: 9px;
-      color: #666;
     }
 
-    .footer {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 9px;
-      color: #999;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 10px;
-    }
-
+    /* Helper Classes */
     .text-right {
       text-align: right;
     }
@@ -147,23 +268,76 @@
     .text-center {
       text-align: center;
     }
+
+    .text-bold {
+      font-weight: bold;
+    }
+
+    .text-primary {
+      color: #0ea5e9;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Watermark -->
+  <div class="watermark">CONFIDENTIAL</div>
+
+  <!-- Header -->
   <div class="header">
-    <h1>📦 LAPORAN MUTASI STOK</h1>
-    <p>StockkuApp - CV Agrosehat Nusantara</p>
+    <div class="logo-container">
+      <img src="{{ public_path('images/stockku-logo.png') }}" class="logo" alt="Logo">
+    </div>
+    <div class="company-info">
+      <div class="company-name">CV AGROSEHAT NUSANTARA</div>
+      <div class="company-address">
+        Jl. Raya Maju Mundur No. 123, Kab. Sleman, D.I. Yogyakarta<br>
+        Telp: (0274) 123456 | Email: info@agrosehat.id
+      </div>
+    </div>
   </div>
 
-  <div class="meta-info">
-    <p><strong>Tanggal Cetak:</strong> {{ now()->format('d F Y, H:i') }} WIB</p>
-    @if(isset($dateRange))
-      <p><strong>Periode:</strong> {{ $dateRange }}</p>
-    @endif
-    <p><strong>Total Transaksi:</strong> {{ count($movements) }}</p>
+  <!-- Summary Cards -->
+  @if(isset($summary))
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-title">Total Transaksi</div>
+        <div class="summary-value">{{ number_format($summary['total_transactions']) }}</div>
+        <div class="summary-sub">Record</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title">Total Barang Masuk</div>
+        <div class="summary-value" style="color: #166534;">+{{ number_format($summary['total_in']) }}</div>
+        <div class="summary-sub">Unit</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title">Total Barang Keluar</div>
+        <div class="summary-value" style="color: #991b1b;">-{{ number_format($summary['total_out']) }}</div>
+        <div class="summary-sub">Unit</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title">Produk Teraktif</div>
+        <div class="summary-value" style="font-size: 12px; line-height: 1.2; margin-top: 5px;">
+          {{ \Illuminate\Support\Str::limit($summary['most_active_product'], 20) }}
+        </div>
+        <div class="summary-sub">{{ $summary['most_active_count'] }} Transaksi</div>
+      </div>
+    </div>
+  @endif
+
+  <!-- Info Bar -->
+  <div class="info-bar">
+    <div style="display: table; width: 100%;">
+      <div style="display: table-cell;">
+        <strong>PERIODE LAPORAN:</strong> {{ $dateRange ?? 'Semua Waktu' }}
+      </div>
+      <div style="display: table-cell; text-align: right;">
+        <strong>DICETAK OLEH:</strong> {{ auth()->user()->name }}
+      </div>
+    </div>
   </div>
 
+  <!-- Main Table -->
   <table>
     <thead>
       <tr>
@@ -173,9 +347,8 @@
         <th style="width: 10%">SKU</th>
         <th style="width: 8%" class="text-center">Tipe</th>
         <th style="width: 15%">Alasan</th>
-        <th style="width: 8%" class="text-right">Qty</th>
-        <th style="width: 8%" class="text-right">Awal</th>
-        <th style="width: 8%" class="text-right">Akhir</th>
+        <th style="width: 10%" class="text-right">Qty</th>
+        <th style="width: 10%" class="text-right">Stock (Awal/Akhir)</th>
         <th style="width: 10%">Admin</th>
       </tr>
     </thead>
@@ -183,49 +356,77 @@
       @forelse($movements as $index => $item)
         <tr>
           <td>{{ $index + 1 }}</td>
-          <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
-          <td>{{ $item->product->name ?? '-' }}</td>
-          <td>{{ $item->product->sku ?? '-' }}</td>
+          <td>
+            <div style="font-weight: bold;">{{ $item->created_at->format('d/m/Y') }}</div>
+            <div style="font-size: 8px; color: #64748b;">{{ $item->created_at->format('H:i') }}</div>
+          </td>
+          <td>
+            <div style="font-weight: 600;">{{ $item->product->name ?? '-' }}</div>
+          </td>
+          <td>{{ $item->product->code ?? '-' }}</td>
           <td class="text-center">
-            <span class="status status-{{ strtolower($item->type) }}">
+            <span class="pill pill-{{ strtolower($item->type) }}">
               {{ strtoupper($item->type) }}
             </span>
           </td>
           <td>{{ $item->reason_text }}</td>
-          <td class="text-right">{{ number_format($item->quantity) }}</td>
-          <td class="text-right">{{ number_format($item->stock_before) }}</td>
-          <td class="text-right">{{ number_format($item->stock_after) }}</td>
+          <td class="text-right">
+            <div style="font-weight: bold;">{{ number_format($item->quantity) }}</div>
+            <!-- Visual Bar for Qty (max 100 for scale) -->
+            @php $width = min(100, ($item->quantity / 500) * 100); @endphp
+            <div class="bar-container" style="float: right;">
+              <div class="bar-fill"
+                style="width: {{ $width }}%; background: {{ $item->type === 'in' ? '#166534' : '#991b1b' }}"></div>
+            </div>
+          </td>
+          <td class="text-right">
+            <div>{{ number_format($item->stock_before) }} <span style="color: #94a3b8;">&rarr;</span>
+              <strong>{{ number_format($item->stock_after) }}</strong>
+            </div>
+          </td>
           <td>{{ $item->createdBy->name ?? '-' }}</td>
         </tr>
       @empty
         <tr>
-          <td colspan="10" class="text-center">Tidak ada data</td>
+          <td colspan="9" class="text-center" style="padding: 20px;">
+            <div style="color: #94a3b8; font-style: italic;">Tidak ada data ditemukan untuk periode ini.</div>
+          </td>
         </tr>
       @endforelse
     </tbody>
   </table>
 
-  <div class="summary">
-    <h3>📈 RINGKASAN</h3>
-    <div class="summary-grid">
-      <div class="summary-item">
-        <div class="value">{{ $movements->where('type', 'in')->sum('quantity') }}</div>
-        <div class="label">Total Masuk (Qty)</div>
-      </div>
-      <div class="summary-item">
-        <div class="value">{{ $movements->where('type', 'out')->sum('quantity') }}</div>
-        <div class="label">Total Keluar (Qty)</div>
-      </div>
-      <div class="summary-item">
-        <div class="value">{{ $movements->count() }}</div>
-        <div class="label">Total Transaksi</div>
-      </div>
+  <!-- Signatures -->
+  <div class="signatures">
+    <div class="signature-box">
+      <div class="signature-title">Dibuat Oleh</div>
+      <div class="signature-line"></div>
+      <div class="signature-date">Admin Gudang</div>
+    </div>
+    <div class="signature-box">
+      <div class="signature-title">Diperiksa Oleh</div>
+      <div class="signature-line"></div>
+      <div class="signature-date">Manager Operasional</div>
+    </div>
+    <div class="signature-box">
+      <div class="signature-title">Disetujui Oleh</div>
+      <div class="signature-line"></div>
+      <div class="signature-date">Direktur Utama</div>
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="footer">
-    <p>Dokumen ini digenerate otomatis oleh StockkuApp pada {{ now()->format('d F Y H:i:s') }}</p>
-    <p>© {{ date('Y') }} CV Agrosehat Nusantara - All Rights Reserved</p>
+    <div class="footer-content">
+      <div class="footer-left">
+        Dicetak pada: {{ now()->format('d/m/Y H:i:s') }} | ID: {{ Str::random(8) }}
+      </div>
+      <div class="footer-right">
+        Halaman
+        <script type="text/php">if (isset($pdf)) { echo $pdf->get_page_number(); }</script> dari
+        <script type="text/php">if (isset($pdf)) { echo $pdf->get_page_count(); }</script>
+      </div>
+    </div>
   </div>
 </body>
 
