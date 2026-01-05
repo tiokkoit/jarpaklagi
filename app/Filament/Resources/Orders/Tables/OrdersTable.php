@@ -2,30 +2,45 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use Carbon\Carbon;
 use App\Models\Order;
+use Filament\Tables\Table;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Table;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\DatePicker;
-use Carbon\Carbon;
+use App\Filament\Resources\Orders\OrderResource;
+use Filament\Forms\Components\Select as FormSelect;
 
 class OrdersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            // --- 🟢 LOGIKA NAVIGASI DINAMIS (TETAP) ---
+            ->recordUrl(function (Order $record) {
+                if (in_array($record->status, ['CANCEL', 'SELESAI', 'DIKEMBALIKAN'])) {
+                    return OrderResource::getUrl('view', ['record' => $record]);
+                }
+                return OrderResource::getUrl('edit', ['record' => $record]);
+            })
+
             ->columns([
-                TextColumn::make('order_date')->label('Tanggal')->date(),
+                TextColumn::make('order_date')
+                    ->label('Tanggal')
+                    ->date('d/m/y') // Diperpendek formatnya agar hemat ruang
+                    ->sortable(),
+
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'info' => fn($state): bool => $state === 'NEW',
-                        'gray' => fn($state): bool => $state === 'DIKIRIM',
-                        'danger' => fn($state): bool => $state === 'CANCEL',
-                        'success' => fn($state): bool => $state === 'SELESAI',
-                        'warning' => fn($state): bool => $state === 'DIKEMBALIKAN',
+                        'info' => 'NEW',
+                        'gray' => 'DIKIRIM',
+                        'danger' => 'CANCEL',
+                        'success' => 'SELESAI',
+                        'warning' => 'DIKEMBALIKAN',
                     ])
                     ->icons([
                         'heroicon-o-sparkles' => 'NEW',
@@ -33,103 +48,133 @@ class OrdersTable
                         'heroicon-o-no-symbol' => 'CANCEL',
                         'heroicon-o-check-badge' => 'SELESAI',
                         'heroicon-o-backspace' => 'DIKEMBALIKAN',
-                    ]),
-                TextColumn::make('customer_name')->label('Nama Customer')->icon('heroicon-o-user')->searchable(),
-                TextColumn::make('phone')->label('No HP')->icon('heroicon-o-phone')->searchable(),
-                TextColumn::make('customer_address')->label('Alamat Customer')->icon('heroicon-o-map-pin')->searchable(),
-                TextColumn::make('kecamatan')->label('Kecamatan')->searchable(),
-                TextColumn::make('kota')->label('Kota')->searchable(),
-                TextColumn::make('province')->label('Provinsi')->searchable(),
-                TextColumn::make('productPackage.name')->label('Paket'),
-                TextColumn::make('quantity')->label('Jumlah Paket'),
-                TextColumn::make('total_price')->label('Total Harga')->money('idr'),
-                BadgeColumn::make('payment')->label('Payment')
-                ->colors([
-                    'teal' => fn($state): bool => $state === 'COD',
-                    'purple' => fn($state): bool => $state === 'TRANSFER',
-                ])
-                ->icons([
-                    'heroicon-o-banknotes' => 'COD',
-                    'heroicon-o-credit-card' => 'TRANSFER',
-                ]),
+                    ])
+                    ->sortable(),
+
+                TextColumn::make('customer_name')
+                    ->label('Pelanggan')
+                    ->icon('heroicon-o-user')
+                    ->description(fn (Order $record): string => $record->phone ?? '') 
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(), // Membungkus nama panjang agar tidak memanjang ke samping
+
+                // --- 📦 OPTIMASI ALAMAT LENGKAP (HIDDEN BY DEFAULT) ---
+                TextColumn::make('customer_address')
+                    ->label('Alamat Pengiriman')
+                    ->icon('heroicon-o-map-pin')
+                    ->wrap()
+                    ->description(fn (Order $record): string => 
+                        ($record->kecamatan ? "Kec. {$record->kecamatan}, " : "") . 
+                        ($record->kota ? "{$record->kota}, " : "") . 
+                        ($record->province ?? "")
+                    )
+                    ->searchable(['customer_address', 'kecamatan', 'kota', 'province']), 
+
+                TextColumn::make('productPackage.name')
+                    ->label('Paket')
+                    ->weight('bold')
+                    ->wrap(), // Membungkus nama paket jika panjang
+
+                TextColumn::make('quantity')
+                    ->label('Qty')
+                    ->alignCenter()
+                    ->weight('bold'),
+
+                TextColumn::make('total_price')
+                    ->label('Total')
+                    ->money('idr')
+                    ->sortable()
+                    ->weight('bold'),
+
+                BadgeColumn::make('payment')
+                    ->label('Metode')
+                    ->colors([
+                        'teal' => 'COD',
+                        'purple' => 'TRANSFER',
+                    ])
+                    ->icons([
+                        'heroicon-o-banknotes' => 'COD',
+                        'heroicon-o-credit-card' => 'TRANSFER',
+                    ])
             ])
+
+            ->striped()
+            ->defaultSort('order_date', 'desc')
+            ->poll('60s')
+            ->emptyStateHeading('Belum Ada Pesanan')
+            ->emptyStateIcon('heroicon-o-shopping-cart')
+
             ->filters([
                 Filter::make('time')
-                    ->label('Waktu')
+                    ->label('Periode Waktu')
                     ->form([
                         FormSelect::make('preset')
-                            ->label('Filter')
+                            ->label('Cepat Pilih')
                             ->options([
-                                '' => '-- Pilih --',
-                                'today' => 'Today',
-                                'last_3' => 'Last 3 Days',
-                                'this_week' => 'This Week',
-                                'last_week' => 'Last Week',
-                                'month' => 'Select Month',
-                                'year' => 'Select Year',
-                                'range' => 'Custom Range',
+                                '' => '-- Semua Waktu --',
+                                'today' => 'Hari Ini',
+                                'last_3' => '3 Hari Terakhir',
+                                'this_week' => 'Minggu Ini',
+                                'last_week' => 'Minggu Lalu',
+                                'month' => 'Pilih Bulan',
+                                'year' => 'Pilih Tahun',
+                                'range' => 'Rentang Kustom',
                             ])
                             ->reactive(),
 
                         DatePicker::make('start')
-                            ->label('Start Date')
+                            ->label('Dari Tanggal')
                             ->visible(fn($get) => $get('preset') === 'range'),
 
                         DatePicker::make('end')
-                            ->label('End Date')
+                            ->label('Sampai Tanggal')
                             ->visible(fn($get) => $get('preset') === 'range'),
 
                         FormSelect::make('month_year')
-                            ->label('Year')
-                            ->options(fn() => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
+                            ->label('Tahun')
+                            ->options(fn() => array_combine(range(date('Y') - 3, date('Y') + 1), range(date('Y') - 3, date('Y') + 1)))
                             ->visible(fn($get) => $get('preset') === 'month'),
 
                         FormSelect::make('month_number')
-                            ->label('Month')
-                            ->options(fn() => array_combine(range(1, 12), ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']))
+                            ->label('Bulan')
+                            ->options([
+                                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                            ])
                             ->visible(fn($get) => $get('preset') === 'month'),
 
                         FormSelect::make('year_only')
-                            ->label('Year')
-                            ->options(fn() => array_combine(range(date('Y') - 5, date('Y') + 1), range(date('Y') - 5, date('Y') + 1)))
+                            ->label('Pilih Tahun')
+                            ->options(fn() => array_combine(range(date('Y') - 3, date('Y') + 1), range(date('Y') - 3, date('Y') + 1)))
                             ->visible(fn($get) => $get('preset') === 'year'),
                     ])
                     ->query(function ($query, array $data) {
                         $preset = $data['preset'] ?? null;
-                        if ($preset === 'today') {
-                            return $query->whereDate('order_date', Carbon::today()->toDateString());
-                        }
-
-                        if ($preset === 'last_3') {
-                            return $query->whereBetween('order_date', [Carbon::now()->subDays(2)->toDateString(), Carbon::now()->toDateString()]);
-                        }
-
-                        if ($preset === 'this_week') {
-                            return $query->whereBetween('order_date', [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]);
-                        }
-
-                        if ($preset === 'last_week') {
-                            return $query->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek()->toDateString(), Carbon::now()->subWeek()->endOfWeek()->toDateString()]);
-                        }
-
+                        if ($preset === 'today') return $query->whereDate('order_date', Carbon::today());
+                        if ($preset === 'last_3') return $query->whereBetween('order_date', [Carbon::now()->subDays(2), Carbon::now()]);
+                        if ($preset === 'this_week') return $query->whereBetween('order_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                        if ($preset === 'last_week') return $query->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+                        
                         if ($preset === 'month' && !empty($data['month_year']) && !empty($data['month_number'])) {
-                            $y = (int) $data['month_year'];
-                            $m = (int) $data['month_number'];
-                            return $query->whereYear('order_date', $y)->whereMonth('order_date', $m);
+                            return $query->whereYear('order_date', $data['month_year'])->whereMonth('order_date', $data['month_number']);
                         }
 
                         if ($preset === 'year' && !empty($data['year_only'])) {
-                            $y = (int) $data['year_only'];
-                            return $query->whereYear('order_date', $y);
+                            return $query->whereYear('order_date', $data['year_only']);
                         }
 
                         if ($preset === 'range' && !empty($data['start']) && !empty($data['end'])) {
-                            return $query->whereBetween('order_date', [Carbon::parse($data['start'])->toDateString(), Carbon::parse($data['end'])->toDateString()]);
+                            return $query->whereBetween('order_date', [Carbon::parse($data['start']), Carbon::parse($data['end'])]);
                         }
-
-                        return $query;
                     }),
             ])
-            ->defaultSort('order_date', 'desc');
+            ->actions([
+                ViewAction::make()->iconButton(),
+                EditAction::make()
+                    ->iconButton()
+                    ->visible(fn (Order $record) => !in_array($record->status, ['CANCEL', 'SELESAI', 'DIKEMBALIKAN'])),
+            ]);
     }
 }
