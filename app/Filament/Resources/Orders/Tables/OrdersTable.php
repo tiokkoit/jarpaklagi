@@ -68,13 +68,11 @@ class OrdersTable
                         ($record->kota ? "{$record->kota}, " : "") . 
                         ($record->province ?? "")
                     )
-                    ->searchable(['customer_address', 'kecamatan', 'kota', 'province'])
-                    ->toggleable(isToggledHiddenByDefault: true), 
+                    ->searchable(['customer_address', 'kecamatan', 'kota', 'province']),
 
                 TextColumn::make('productPackage.name')
                     ->label('Paket')
                     ->weight('bold')
-                    ->color('primary')
                     ->wrap(),
 
                 TextColumn::make('quantity')
