@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalesReportPdfController;
+use App\Http\Controllers\StockMovementPdfController;
 
 Route::get('/', function () {
     return view('landing');
@@ -16,4 +17,6 @@ Route::get('/welcome', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/exports/sales-report/pdf', [SalesReportPdfController::class, 'export'])
         ->name('exports.sales-report.pdf');
+    Route::get('/exports/stock-movements/pdf', [StockMovementPdfController::class, 'export'])
+        ->name('exports.stock-movements.pdf');
 });
