@@ -23,23 +23,40 @@ class Analytics extends Page
 
   protected static ?string $navigationLabel = 'Analytics';
 
-  protected static ?string $title = 'Business Analytics';
+  protected static ?string $title = 'Dashboard Analitik Bisnis';
 
-  protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 10;
 
-  protected function getHeaderWidgets(): array
-  {
-    return [
-      AbcParetoChart::class,
-      StockLevelChart::class,
-      PackageBottleneckChart::class,
-      PackageCostStructureChart::class,
-      StockMovementTrendChart::class,
-      ProductPerformanceChart::class,
-      ProductParetoChart::class,
-      CustomerRetentionChart::class,
-      ProvinceDistributionChart::class,
-      GeographicDistributionChart::class,
-    ];
-  }
+    /**
+     * Mengatur jumlah kolom grid agar layout lebih dinamis.
+     * Kita gunakan grid 2 kolom untuk layar besar (lg).
+     */
+    public function getHeaderWidgetsColumns(): int | array
+    {
+        return [
+            'default' => 1,
+            'lg' => 2,
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // --- 📦 GROUP 1: INVENTORY & OPS (Fokus IE) ---
+            AbcParetoChart::class,          // Penting untuk prioritas stok
+            StockLevelChart::class,         // Monitor level gudang
+            PackageBottleneckChart::class,  // Analisis hambatan produksi
+            StockMovementTrendChart::class, // Tren arus barang
+
+            // --- 💰 GROUP 2: SALES & PERFORMANCE ---
+            ProductPerformanceChart::class, 
+            ProductParetoChart::class,      // Analisis 80/20 penjualan
+            PackageCostStructureChart::class, // Analisis margin/biaya
+            CustomerRetentionChart::class,
+
+            // --- 🗺️ GROUP 3: MARKET DISTRIBUTION ---
+            ProvinceDistributionChart::class,
+            GeographicDistributionChart::class,
+        ];
+    }
 }
