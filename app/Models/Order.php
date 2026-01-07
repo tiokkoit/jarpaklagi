@@ -48,12 +48,17 @@ class Order extends Model
     public static function booted()
     {
         static::creating(function (Order $order) {
+            // If price is not set, get it from the product package
             if (is_null($order->price) && $order->product_package_id) {
                 $pkg = ProductPackage::find($order->product_package_id);
                 if ($pkg) {
                     $order->price = $pkg->price;
-                    $order->total_price = ($order->quantity ?? 1) * $pkg->price;
                 }
+            }
+
+            // Always calculate total_price based on quantity and price
+            if (is_null($order->total_price) && $order->price) {
+                $order->total_price = ($order->quantity ?? 1) * $order->price;
             }
 
             if (empty($order->status)) {
@@ -81,16 +86,16 @@ class Order extends Model
             $this->load('productPackage.product');
 
             $pkg = $this->productPackage;
-            if (! $pkg) {
+            if (!$pkg) {
                 throw new \Exception('ProductPackage not found.');
             }
 
             $product = $pkg->product;
-            if (! $product) {
+            if (!$product) {
                 throw new \Exception('Product not found.');
             }
 
-            $requiredUnits = (int)$pkg->pcs_per_package * (int)$this->quantity;
+            $requiredUnits = (int) $pkg->pcs_per_package * (int) $this->quantity;
 
             if ($newStatus === self::STATUS_DIKIRIM) {
                 try {
